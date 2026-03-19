@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADEY — Sign In / Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<script src="adey-api.js"></script>
+<style>
+:root{--ink:#0A0D0F;--ink2:#141A1F;--ink3:#1C2530;--border:#222D38;--muted:#4A6072;--soft:#8AA0B0;--body:#C8D8E4;--white:#F0F6FA;--gold:#F0A500;--gold2:#FFCC55;--ember:#E84B1A;--jade:#00BFA5;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--ink);color:var(--body);font-family:'Cabinet Grotesk',sans-serif;min-height:100vh;display:flex;align-items:stretch;}
+a{color:inherit;text-decoration:none;}button{cursor:pointer;font-family:inherit;}
+input{cursor:text;font-family:inherit;}
+
+/* split layout */
+.auth-left{flex:1;background:linear-gradient(145deg,#0d1520 0%,var(--ink2) 100%);display:flex;flex-direction:column;justify-content:center;padding:80px 60px;position:relative;overflow:hidden;max-width:480px;}
+.auth-left::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(240,165,0,.12),transparent 65%);pointer-events:none;}
+.auth-left::after{content:'';position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(0,191,165,.07),transparent 65%);pointer-events:none;}
+.al-logo{display:flex;align-items:center;gap:10px;margin-bottom:60px;}
+.al-logo-mark{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--ember));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-weight:800;font-size:1.1rem;color:var(--ink);}
+.al-brand{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.4rem;color:var(--white);}
+.al-tagline{color:var(--muted);font-size:.72rem;margin-top:2px;}
+.al-headline{font-family:'Clash Display',sans-serif;font-size:2.2rem;font-weight:700;color:var(--white);letter-spacing:-.02em;line-height:1.2;margin-bottom:16px;}
+.al-headline span{background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.al-sub{font-size:.92rem;color:var(--muted);line-height:1.7;margin-bottom:40px;}
+.al-perks{display:flex;flex-direction:column;gap:12px;}
+.perk{display:flex;align-items:center;gap:12px;font-size:.88rem;color:var(--soft);}
+.perk-icon{width:32px;height:32px;border-radius:8px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.2);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+
+/* right — form */
+.auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 60px;background:var(--ink);}
+.auth-form-wrap{width:100%;max-width:420px;}
+
+/* tabs */
+.auth-tabs{display:flex;gap:0;background:var(--ink2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:32px;}
+.tab-btn{flex:1;height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-size:.9rem;font-weight:600;transition:background .2s,color .2s;}
+.tab-btn.active{background:var(--ink3);color:var(--white);}
+
+/* form */
+.form-title{font-family:'Clash Display',sans-serif;font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.form-sub{font-size:.85rem;color:var(--muted);margin-bottom:28px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.field label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.field-req{color:var(--ember);}
+.finput{height:46px;padding:0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:10px;color:var(--body);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
+.finput:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,165,0,.1);}
+.finput::placeholder{color:var(--muted);}
+.finput.error{border-color:var(--ember);}
+.field-error{font-size:.75rem;color:var(--ember);display:none;}
+.field.has-error .field-error{display:block;}
+.field.has-error .finput{border-color:var(--ember);}
+
+/* password toggle */
+.password-wrap{position:relative;}
+.password-wrap .finput{padding-right:44px;}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-size:.9rem;transition:color .2s;}
+.pw-toggle:hover{color:var(--gold);}
+
+.forgot{font-size:.8rem;color:var(--gold);text-align:right;display:block;margin-top:-8px;margin-bottom:14px;transition:opacity .2s;}
+.forgot:hover{opacity:.7;}
+
+.submit-btn{width:100%;height:50px;background:var(--gold);border:none;border-radius:12px;color:var(--ink);font-size:.98rem;font-weight:800;transition:background .2s,transform .15s,box-shadow .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;}
+.submit-btn:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(240,165,0,.25);}
+.submit-btn:disabled{opacity:.6;pointer-events:none;}
+
+.divider{display:flex;align-items:center;gap:14px;margin:24px 0;font-size:.78rem;color:var(--muted);}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.social-btns{display:flex;gap:10px;}
+.social-btn{flex:1;height:44px;background:var(--ink3);border:1px solid var(--border);border-radius:10px;color:var(--body);font-size:.85rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:border-color .2s,color .2s;}
+.social-btn:hover{border-color:var(--soft);color:var(--white);}
+
+.switch-text{text-align:center;font-size:.83rem;color:var(--muted);margin-top:24px;}
+.switch-text a{color:var(--gold);font-weight:600;transition:opacity .2s;}
+.switch-text a:hover{opacity:.7;}
+
+.terms-note{font-size:.73rem;color:var(--muted);text-align:center;margin-top:16px;line-height:1.6;}
+.terms-note a{color:var(--gold);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.auth-form-wrap{animation:fadeUp .4s ease;}
+
+@media(max-width:768px){.auth-left{display:none;}.auth-right{padding:32px 24px;}}
+</style>
+</head>
+<body>
+<!-- LEFT PANEL -->
+<div class="auth-left">
+  <div class="al-logo">
+    <div class="al-logo-mark">A</div>
+    <div><div class="al-brand">ADEY</div><div class="al-tagline">Quality Imports, Lagos Prices</div></div>
+  </div>
+  <h2 class="al-headline">China's best.<br/><span>Lagos delivered.</span></h2>
+  <p class="al-sub">Join 2,400+ customers shopping quality goods imported directly from China — at prices that make sense.</p>
+  <div class="al-perks">
+    <div class="perk"><div class="perk-icon">📦</div>Track orders from China to your doorstep</div>
+    <div class="perk"><div class="perk-icon">💳</div>Pay with card, bank transfer, or USSD</div>
+    <div class="perk"><div class="perk-icon">⏳</div>Pre-order with just 30% deposit upfront</div>
+    <div class="perk"><div class="perk-icon">📲</div>SMS updates at every shipment stage</div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="auth-right">
+  <div class="auth-form-wrap">
+    <div class="auth-tabs">
+      <button class="tab-btn active" id="loginTab" onclick="switchTab('login')">Sign In</button>
+      <button class="tab-btn" id="registerTab" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-title">Welcome back</div>
+      <div class="form-sub">Sign in to your ADEY account</div>
+
+      <div class="field" id="loginEmailField">
+        <label>Email Address <span class="field-req">*</span></label>
+        <input class="finput" type="email" id="loginEmail" placeholder="emeka@gmail.com" autocomplete="email"/>
+        <span class="field-error">Please enter a valid email</span>
+      </div>
+
+      <div class="field" id="loginPassField">
+        <label>Password <span class="field-req">*</span></label>
+        <div class="password-wrap">
+          <input class="finput" type="password" id="loginPass" placeholder="Your password" autocomplete="current-password"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('loginPass',this)">👁</button>
+        </div>
+        <span class="field-error">Password required</span>
+      </div>
+
+      <a href="#" class="forgot">Forgot your password?</a>
+
+      <button class="submit-btn" id="loginBtn" onclick="doLogin()">
+        Sign In →
+      </button>
+
+      <div class="divider">or continue with</div>
+      <div class="social-btns">
+        <button class="social-btn" onclick="ADEY_API.ui.toast('Google OAuth coming soon','info')">🔵 Google</button>
+        <button class="social-btn" onclick="ADEY_API.ui.toast('Apple login coming soon','info')">🍎 Apple</button>
+      </div>
+
+      <div class="switch-text">New to ADEY? <a onclick="switchTab('register')">Create an account →</a></div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none;">
+      <div class="form-title">Create your account</div>
+      <div class="form-sub">Start shopping quality imports today</div>
+
+      <div class="field-row">
+        <div class="field" id="regFirstField">
+          <label>First Name <span class="field-req">*</span></label>
+          <input class="finput" type="text" id="regFirst" placeholder="Emeka" autocomplete="given-name"/>
+          <span class="field-error">Required</span>
+        </div>
+        <div class="field" id="regLastField">
+          <label>Last Name <span class="field-req">*</span></label>
+          <input class="finput" type="text" id="regLast" placeholder="Okafor" autocomplete="family-name"/>
+          <span class="field-error">Required</span>
+        </div>
+      </div>
+
+      <div class="field" id="regEmailField">
+        <label>Email Address <span class="field-req">*</span></label>
+        <input class="finput" type="email" id="regEmail" placeholder="emeka@gmail.com" autocomplete="email"/>
+        <span class="field-error">Please enter a valid email</span>
+      </div>
+
+      <div class="field" id="regPhoneField">
+        <label>Phone Number <span class="field-req">*</span></label>
+        <input class="finput" type="tel" id="regPhone" placeholder="0812 345 6789" autocomplete="tel"/>
+        <span class="field-error">Enter a valid Nigerian number (e.g. 08123456789)</span>
+      </div>
+
+      <div class="field" id="regPassField">
+        <label>Password <span class="field-req">*</span></label>
+        <div class="password-wrap">
+          <input class="finput" type="password" id="regPass" placeholder="Min 8 characters" autocomplete="new-password"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('regPass',this)">👁</button>
+        </div>
+        <span class="field-error">Must be at least 8 characters</span>
+      </div>
+
+      <button class="submit-btn" id="registerBtn" onclick="doRegister()">
+        Create Account →
+      </button>
+
+      <div class="terms-note">By creating an account you agree to ADEY's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</div>
+
+      <div class="switch-text">Already have an account? <a onclick="switchTab('login')">Sign in →</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Redirect if already logged in
+ADEY_API.ui.redirectIfLoggedIn();
+
+function switchTab(tab) {
+  document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('loginTab').classList.toggle('active',    tab === 'login');
+  document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+}
+
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '🙈'; }
+  else                          { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+// Field validation helper
+function setError(fieldId, hasError) {
+  document.getElementById(fieldId).classList.toggle('has-error', hasError);
+  document.getElementById(fieldId).querySelector('.finput').classList.toggle('error', hasError);
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+
+  let valid = true;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('loginEmailField', true); valid = false; }
+  else setError('loginEmailField', false);
+  if (!pass) { setError('loginPassField', true); valid = false; }
+  else setError('loginPassField', false);
+  if (!valid) return;
+
+  const btn = document.getElementById('loginBtn');
+  ADEY_API.ui.btnLoading(btn, 'Signing in…');
+
+  try {
+    await ADEY_API.auth.login({ email, password: pass });
+    ADEY_API.ui.toast('Welcome back! Redirecting…', 'success');
+    const params = new URLSearchParams(location.search);
+    setTimeout(() => { location.href = params.get('next') || 'adey-dashboard.html'; }, 800);
+  } catch (err) {
+    ADEY_API.ui.toast(err.message, 'error');
+    ADEY_API.ui.btnDone(btn);
+  }
+}
+
+async function doRegister() {
+  const first = document.getElementById('regFirst').value.trim();
+  const last  = document.getElementById('regLast').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.replace(/\s/g,'');
+  const pass  = document.getElementById('regPass').value;
+
+  let valid = true;
+  if (!first) { setError('regFirstField', true); valid = false; } else setError('regFirstField', false);
+  if (!last)  { setError('regLastField',  true); valid = false; } else setError('regLastField',  false);
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('regEmailField', true); valid = false; } else setError('regEmailField', false);
+  if (!phone || !/^0[7-9][01]\d{8}$/.test(phone)) { setError('regPhoneField', true); valid = false; } else setError('regPhoneField', false);
+  if (!pass || pass.length < 8) { setError('regPassField', true); valid = false; } else setError('regPassField', false);
+  if (!valid) return;
+
+  const btn = document.getElementById('registerBtn');
+  ADEY_API.ui.btnLoading(btn, 'Creating account…');
+
+  try {
+    await ADEY_API.auth.register({ firstName: first, lastName: last, email, phone, password: pass });
+    ADEY_API.ui.toast('Account created! Welcome to ADEY 🎉', 'success');
+    setTimeout(() => { location.href = 'adey-dashboard.html'; }, 900);
+  } catch (err) {
+    ADEY_API.ui.toast(err.message, 'error');
+    ADEY_API.ui.btnDone(btn);
+  }
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('loginForm').style.display !== 'none') doLogin();
+  else doRegister();
+});
+</script>
+</body>
+</html>
