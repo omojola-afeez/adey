@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADEY — Cart & Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0A0D0F;--ink2:#141A1F;--ink3:#1C2530;--border:#222D38;
+  --muted:#4A6072;--soft:#8AA0B0;--body:#C8D8E4;--white:#F0F6FA;
+  --gold:#F0A500;--gold2:#FFCC55;--ember:#E84B1A;--jade:#00BFA5;--sky:#1A8FD1;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--body);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden;cursor:none;}
+.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:transform .15s;mix-blend-mode:difference;}
+.cursor-ring{width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;}
+a{color:inherit;text-decoration:none;}
+button,input,select,textarea{cursor:none;font-family:inherit;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--ink2);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:72px;background:rgba(10,13,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-brand{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.35rem;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;align-items:center;gap:36px;list-style:none;}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--soft);transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
+.nav-links a:hover{color:var(--white);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-actions{display:flex;align-items:center;gap:14px;}
+.btn-ghost{height:40px;padding:0 20px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--soft);font-size:.85rem;font-weight:500;transition:border-color .2s,color .2s;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--white);}
+.cart-btn{position:relative;width:40px;height:40px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:1.1rem;transition:border-color .2s,color .2s;}
+.cart-btn:hover{border-color:var(--gold);color:var(--gold);}
+.cart-badge{position:absolute;top:-5px;right:-5px;width:17px;height:17px;background:var(--ember);border-radius:50%;font-size:.6rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);}
+
+/* ── STEP PROGRESS ── */
+.step-bar{padding:92px 80px 0;max-width:1400px;margin:0 auto;}
+.step-progress{display:flex;align-items:center;gap:0;margin-bottom:40px;}
+.step-item{display:flex;align-items:center;gap:10px;flex:1;}
+.step-item:last-child{flex:0 0 auto;}
+.step-circle{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:var(--muted);transition:all .3s;flex-shrink:0;}
+.step-item.active .step-circle{border-color:var(--gold);background:var(--gold);color:var(--ink);}
+.step-item.done .step-circle{border-color:var(--jade);background:rgba(0,191,165,.15);color:var(--jade);}
+.step-label{font-size:.82rem;font-weight:600;color:var(--muted);transition:color .3s;white-space:nowrap;}
+.step-item.active .step-label{color:var(--white);}
+.step-item.done .step-label{color:var(--jade);}
+.step-line{flex:1;height:1.5px;background:var(--border);margin:0 12px;transition:background .3s;}
+.step-line.done{background:var(--jade);}
+
+/* ── PAGE TITLE ── */
+.page-top{max-width:1400px;margin:0 auto;padding:0 80px 36px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.page-title{font-family:'Clash Display',sans-serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:700;color:var(--white);letter-spacing:-.02em;}
+.page-sub{font-size:.88rem;color:var(--muted);}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 400px;gap:32px;max-width:1400px;margin:0 auto;padding:0 80px 100px;align-items:start;}
+
+/* ── PANELS ── */
+.panel{background:var(--ink2);border:1px solid var(--border);border-radius:20px;overflow:hidden;}
+.panel-header{padding:22px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--white);}
+.panel-meta{font-size:.8rem;color:var(--muted);}
+.panel-body{padding:0;}
+
+/* ── CART ITEMS ── */
+.cart-item{padding:20px 28px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:start;transition:background .15s;}
+.cart-item:last-child{border-bottom:none;}
+.cart-item:hover{background:var(--ink3);}
+
+.ci-img{width:72px;height:72px;border-radius:12px;background:var(--ink3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;position:relative;}
+.ci-badge{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;font-size:.55rem;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink2);}
+.ci-badge-instock{background:var(--jade);color:#fff;}
+.ci-badge-transit{background:var(--sky);color:#fff;}
+.ci-badge-po{background:var(--ember);color:#fff;}
+
+.ci-info{}
+.ci-cat{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.ci-name{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:600;color:var(--white);margin-bottom:5px;line-height:1.3;}
+.ci-meta{font-size:.78rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.ci-meta span{display:flex;align-items:center;gap:4px;}
+
+.ci-qty{display:flex;align-items:center;gap:0;background:var(--ink);border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content;}
+.ciq-btn{width:32px;height:32px;border:none;background:transparent;color:var(--soft);font-size:1rem;font-weight:700;transition:color .15s,background .15s;}
+.ciq-btn:hover{color:var(--gold);background:rgba(240,165,0,.08);}
+.ciq-num{width:36px;text-align:center;font-size:.88rem;font-weight:700;color:var(--white);background:transparent;border:none;outline:none;}
+
+.ci-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:100px;}
+.ci-price{font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:var(--gold);}
+.ci-old{font-size:.75rem;color:var(--muted);text-decoration:line-through;}
+.ci-remove{background:none;border:none;color:var(--muted);font-size:.8rem;display:flex;align-items:center;gap:4px;padding:0;transition:color .15s;}
+.ci-remove:hover{color:var(--ember);}
+
+/* deposit notice */
+.deposit-notice{margin:0 28px 0;background:rgba(26,143,209,.08);border:1px solid rgba(26,143,209,.25);border-radius:10px;padding:12px 16px;display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:var(--sky);line-height:1.55;}
+.deposit-notice strong{color:var(--sky);}
+
+/* cart actions */
+.cart-actions{padding:20px 28px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.coupon-row{display:flex;gap:8px;flex:1;min-width:240px;}
+.coupon-input{flex:1;height:40px;padding:0 14px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;color:var(--body);font-size:.85rem;outline:none;transition:border-color .2s;}
+.coupon-input:focus{border-color:var(--gold);}
+.coupon-input::placeholder{color:var(--muted);}
+.coupon-btn{height:40px;padding:0 18px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--body);font-size:.83rem;font-weight:600;transition:border-color .2s,color .2s;}
+.coupon-btn:hover{border-color:var(--gold);color:var(--gold);}
+.coupon-applied{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--jade);font-weight:600;}
+
+.continue-shopping{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted);transition:color .2s;}
+.continue-shopping:hover{color:var(--gold);}
+
+/* ── CHECKOUT FORM ── (same panel, shown in step 2) */
+.checkout-view{display:none;}
+.checkout-view.active{display:block;}
+.cart-view.active{display:block;}
+.cart-view{display:block;}
+
+.form-section{padding:28px;border-bottom:1px solid var(--border);}
+.form-section:last-child{border-bottom:none;}
+.fs-title{font-family:'Clash Display',sans-serif;font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.fs-num{width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+.form-row{display:grid;gap:14px;margin-bottom:14px;}
+.form-row.cols2{grid-template-columns:1fr 1fr;}
+.form-row.cols3{grid-template-columns:1fr 1fr 1fr;}
+
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.field-req{color:var(--ember);}
+
+.finput{height:44px;padding:0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:10px;color:var(--body);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s;width:100%;}
+.finput:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,165,0,.1);}
+.finput::placeholder{color:var(--muted);}
+.finput.error{border-color:var(--ember);}
+.finput.valid{border-color:var(--jade);}
+
+.fselect{height:44px;padding:0 36px 0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:10px;color:var(--body);font-size:.9rem;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234A6072' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:border-color .2s;width:100%;}
+.fselect:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,165,0,.1);}
+
+.field-hint{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.field-error{font-size:.75rem;color:var(--ember);margin-top:2px;display:none;}
+.field.has-error .field-error{display:block;}
+.field.has-error .finput{border-color:var(--ember);}
+
+/* delivery options */
+.delivery-opts{display:flex;flex-direction:column;gap:10px;}
+.del-opt{display:flex;align-items:flex-start;gap:14px;padding:16px;background:var(--ink3);border:1.5px solid var(--border);border-radius:12px;transition:border-color .2s;cursor:none;}
+.del-opt:hover{border-color:var(--soft);}
+.del-opt.selected{border-color:var(--gold);background:rgba(240,165,0,.05);}
+.del-opt input[type=radio]{display:none;}
+.del-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:var(--ink3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:border-color .2s;}
+.del-opt.selected .del-radio{border-color:var(--gold);}
+.del-radio-inner{width:10px;height:10px;border-radius:50%;background:var(--gold);opacity:0;transform:scale(0);transition:opacity .2s,transform .2s;}
+.del-opt.selected .del-radio-inner{opacity:1;transform:scale(1);}
+.del-opt-icon{font-size:1.4rem;flex-shrink:0;}
+.del-opt-body{flex:1;}
+.del-opt-title{font-size:.9rem;font-weight:600;color:var(--white);margin-bottom:3px;}
+.del-opt-sub{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.del-opt-price{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gold);white-space:nowrap;}
+.del-opt-free{color:var(--jade);}
+
+/* payment section */
+.payment-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.pay-tab{height:44px;padding:0 18px;border-radius:10px;background:var(--ink3);border:1.5px solid var(--border);color:var(--soft);font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:8px;transition:border-color .2s,color .2s,background .2s;}
+.pay-tab:hover{border-color:var(--soft);color:var(--white);}
+.pay-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(240,165,0,.07);}
+.pay-tab-icon{font-size:1.1rem;}
+
+.card-form{display:flex;flex-direction:column;gap:14px;}
+.card-number-wrap{position:relative;}
+.card-network{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:.06em;}
+
+.payment-alts{display:flex;flex-direction:column;gap:12px;}
+.pay-alt-btn{width:100%;height:52px;border-radius:12px;border:1.5px solid var(--border);background:var(--ink3);color:var(--white);font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .2s,background .2s,transform .15s;}
+.pay-alt-btn:hover{border-color:var(--gold);background:rgba(240,165,0,.05);transform:translateY(-1px);}
+
+.pay-info-note{display:flex;align-items:flex-start;gap:10px;background:rgba(0,191,165,.07);border:1px solid rgba(0,191,165,.2);border-radius:10px;padding:12px 16px;font-size:.8rem;color:var(--jade);line-height:1.6;margin-top:8px;}
+
+/* ── ORDER SUMMARY ── */
+.summary-panel{position:sticky;top:92px;}
+
+.summary-items{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:14px;}
+.si-row{display:flex;gap:12px;align-items:center;}
+.si-img{width:52px;height:52px;border-radius:10px;background:var(--ink3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;position:relative;}
+.si-qty{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--muted);border-radius:50%;font-size:.6rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink2);}
+.si-info{flex:1;}
+.si-name{font-size:.84rem;font-weight:600;color:var(--white);line-height:1.3;margin-bottom:2px;}
+.si-variant{font-size:.72rem;color:var(--muted);}
+.si-price{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--gold);white-space:nowrap;}
+
+.summary-calcs{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:10px;}
+.calc-row{display:flex;justify-content:space-between;align-items:center;font-size:.88rem;}
+.calc-label{color:var(--muted);}
+.calc-val{color:var(--body);font-weight:600;}
+.calc-discount{color:var(--jade);}
+.calc-divider{height:1px;background:var(--border);margin:4px 0;}
+.calc-total-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;}
+.calc-total-label{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--white);}
+.calc-total-val{font-family:'Clash Display',sans-serif;font-size:1.6rem;font-weight:700;color:var(--gold);}
+
+.coupon-success{display:flex;align-items:center;gap:8px;background:rgba(0,191,165,.08);border:1px solid rgba(0,191,165,.25);border-radius:8px;padding:10px 14px;font-size:.8rem;color:var(--jade);font-weight:600;}
+.coupon-remove{background:none;border:none;color:var(--muted);margin-left:auto;font-size:.85rem;transition:color .15s;}
+.coupon-remove:hover{color:var(--ember);}
+
+.summary-cta{padding:20px 24px;display:flex;flex-direction:column;gap:10px;}
+.checkout-btn{width:100%;height:56px;background:var(--gold);border:none;border-radius:12px;color:var(--ink);font-size:1rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s,transform .15s,box-shadow .2s;}
+.checkout-btn:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 10px 32px rgba(240,165,0,.28);}
+.checkout-btn:disabled{opacity:.5;pointer-events:none;}
+
+.place-order-btn{width:100%;height:56px;background:var(--gold);border:none;border-radius:12px;color:var(--ink);font-size:1rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s,transform .15s,box-shadow .2s;}
+.place-order-btn:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 10px 32px rgba(240,165,0,.28);}
+
+.secure-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.78rem;color:var(--muted);}
+.trust-logos{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.trust-logo{height:24px;padding:0 10px;background:var(--ink3);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--muted);letter-spacing:.05em;}
+
+/* ── SUCCESS SCREEN ── */
+.success-screen{display:none;max-width:640px;margin:0 auto;padding:80px 40px 100px;text-align:center;}
+.success-screen.active{display:block;}
+.success-icon{font-size:5rem;margin-bottom:24px;animation:bounceIn .6s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes bounceIn{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+.success-title{font-family:'Clash Display',sans-serif;font-size:2.2rem;font-weight:700;color:var(--white);letter-spacing:-.02em;margin-bottom:12px;}
+.success-sub{font-size:1rem;color:var(--soft);line-height:1.7;margin-bottom:36px;}
+.order-ref{background:var(--ink2);border:1px solid var(--border);border-radius:14px;padding:20px 28px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.or-label{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.or-value{font-family:'Clash Display',sans-serif;font-size:1.4rem;font-weight:700;color:var(--gold);}
+.next-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:36px;}
+.ns-item{display:flex;align-items:center;gap:14px;background:var(--ink2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:left;}
+.ns-icon{font-size:1.4rem;flex-shrink:0;}
+.ns-text{font-size:.88rem;color:var(--soft);line-height:1.5;}
+.ns-text strong{color:var(--white);display:block;font-size:.92rem;margin-bottom:2px;}
+.success-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.sb-primary{height:48px;padding:0 32px;background:var(--gold);border:none;border-radius:10px;color:var(--ink);font-size:.9rem;font-weight:800;transition:background .2s;}
+.sb-primary:hover{background:var(--gold2);}
+.sb-secondary{height:48px;padding:0 28px;background:transparent;border:1.5px solid var(--border);border-radius:10px;color:var(--body);font-size:.9rem;font-weight:600;transition:border-color .2s,color .2s;}
+.sb-secondary:hover{border-color:var(--jade);color:var(--jade);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){.layout{grid-template-columns:1fr;}.summary-panel{position:static;}.step-bar,.page-top{padding-left:40px;padding-right:40px;}.layout{padding:0 40px 80px;}}
+@media(max-width:700px){nav{padding:0 24px;}.nav-links{display:none;}.step-bar,.page-top{padding-left:24px;padding-right:24px;}.layout{padding:0 24px 80px;}.step-label{display:none;}.cart-item{grid-template-columns:60px 1fr auto;gap:12px;padding:16px 20px;}.ci-img{width:60px;height:60px;font-size:1.6rem;}.form-row.cols2,.form-row.cols3{grid-template-columns:1fr;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}}
+</style>
+</head>
+<body>
+  <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <defs><linearGradient id="nlg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F0A500"/><stop offset="100%" stop-color="#E84B1A"/></linearGradient></defs>
+      <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="url(#nlg)" stroke-width="1.5"/>
+      <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="serif" font-weight="700" font-size="13" fill="#F0A500">A</text>
+    </svg>
+    <span class="nav-brand">ADEY</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="adey-homepage.html">Home</a></li>
+    <li><a href="adey-shop.html">Shop</a></li>
+    <li><a href="#">In Transit</a></li>
+    <li><a href="#">Pre-Order</a></li>
+    <li><a href="#">Track Order</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" data-auth-hide onclick="location.href='adey-auth.html'">Sign In</button>
+    <a href="adey-dashboard.html" class="btn-ghost" data-auth-show style="display:none">Hi, <span data-user-name>there</span> 👤</a>
+    <button class="cart-btn">🛒<span class="cart-badge" data-cart-count id="cartCount">3</span></button>
+  </div>
+</nav>
+
+<!-- STEP BAR -->
+<div class="step-bar">
+  <div class="step-progress">
+    <div class="step-item active" id="step1Item">
+      <div class="step-circle" id="step1Circle">1</div>
+      <span class="step-label">Cart</span>
+    </div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-item" id="step2Item">
+      <div class="step-circle" id="step2Circle">2</div>
+      <span class="step-label">Checkout</span>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-item" id="step3Item">
+      <div class="step-circle" id="step3Circle">3</div>
+      <span class="step-label">Payment</span>
+    </div>
+    <div class="step-line" id="line3"></div>
+    <div class="step-item" id="step4Item">
+      <div class="step-circle" id="step4Circle">✓</div>
+      <span class="step-label">Confirmed</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE TITLE -->
+<div class="page-top" id="pageTop">
+  <div class="page-title" id="pageTitle">Your Cart</div>
+  <div class="page-sub" id="pageSub">3 items · ₦139,000</div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout" id="mainLayout">
+
+  <!-- LEFT COLUMN -->
+  <div>
+
+    <!-- ── CART VIEW ── -->
+    <div id="cartView">
+      <div class="panel" style="margin-bottom:20px;">
+        <div class="panel-header">
+          <div class="panel-title">Cart Items</div>
+          <div class="panel-meta">3 items</div>
+        </div>
+        <div class="panel-body">
+
+          <!-- Item 1 -->
+          <div class="cart-item" id="item1">
+            <div class="ci-img">🎧<span class="ci-badge ci-badge-instock">✓</span></div>
+            <div class="ci-info">
+              <div class="ci-cat">Audio</div>
+              <div class="ci-name">Pro Wireless Earbuds ANC Noise Cancelling</div>
+              <div class="ci-meta">
+                <span>🎨 Midnight Black</span>
+                <span>📶 Bluetooth 5.3</span>
+              </div>
+              <div class="ci-qty">
+                <button class="ciq-btn" onclick="changeItemQty('q1',-1)">−</button>
+                <input class="ciq-num" id="q1" value="1" readonly/>
+                <button class="ciq-btn" onclick="changeItemQty('q1',1)">+</button>
+              </div>
+            </div>
+            <div class="ci-right">
+              <div>
+                <div class="ci-price" id="p1">₦28,500</div>
+                <div class="ci-old">₦45,000</div>
+              </div>
+              <button class="ci-remove" onclick="removeItem('item1',28500)">🗑 Remove</button>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="cart-item" id="item2">
+            <div class="ci-img">📱<span class="ci-badge ci-badge-instock">✓</span></div>
+            <div class="ci-info">
+              <div class="ci-cat">Phones</div>
+              <div class="ci-name">Xiaomi Redmi 13C 128GB Dual SIM</div>
+              <div class="ci-meta">
+                <span>🎨 Midnight Blue</span>
+                <span>💾 128GB Storage</span>
+              </div>
+              <div class="ci-qty">
+                <button class="ciq-btn" onclick="changeItemQty('q2',-1)">−</button>
+                <input class="ciq-num" id="q2" value="1" readonly/>
+                <button class="ciq-btn" onclick="changeItemQty('q2',1)">+</button>
+              </div>
+            </div>
+            <div class="ci-right">
+              <div>
+                <div class="ci-price" id="p2">₦92,000</div>
+                <div class="ci-old">₦130,000</div>
+              </div>
+              <button class="ci-remove" onclick="removeItem('item2',92000)">🗑 Remove</button>
+            </div>
+          </div>
+
+          <!-- Item 3 — Pre-order -->
+          <div class="cart-item" id="item3">
+            <div class="ci-img">⌚<span class="ci-badge ci-badge-po">PO</span></div>
+            <div class="ci-info">
+              <div class="ci-cat">Wearables</div>
+              <div class="ci-name">Smart Watch Ultra Fitness & Health Monitor</div>
+              <div class="ci-meta">
+                <span>🎨 Gunmetal Grey</span>
+                <span>🚢 ETA Mar 22</span>
+              </div>
+              <div class="ci-qty">
+                <button class="ciq-btn" onclick="changeItemQty('q3',-1)">−</button>
+                <input class="ciq-num" id="q3" value="1" readonly/>
+                <button class="ciq-btn" onclick="changeItemQty('q3',1)">+</button>
+              </div>
+            </div>
+            <div class="ci-right">
+              <div>
+                <div class="ci-price" id="p3">₦38,000</div>
+                <div class="ci-old">₦60,000</div>
+              </div>
+              <button class="ci-remove" onclick="removeItem('item3',38000)">🗑 Remove</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- pre-order deposit notice -->
+        <div class="deposit-notice" style="margin:16px 28px;">
+          ℹ️ <div><strong>Pre-order item included.</strong> The Smart Watch requires a 30% deposit (₦11,400) today. The remaining ₦26,600 is collected when it arrives in Lagos.</div>
+        </div>
+
+        <div class="cart-actions">
+          <div class="coupon-row">
+            <input class="coupon-input" id="couponInput" type="text" placeholder="Promo code (try: ADEY10)"/>
+            <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+          </div>
+          <a href="adey-shop.html" class="continue-shopping">← Continue Shopping</a>
+        </div>
+      </div>
+
+      <!-- Saved for later / recommended -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">You Might Also Need</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:none;">
+          <div style="padding:20px;border-right:1px solid var(--border);text-align:center;">
+            <div style="font-size:2rem;margin-bottom:8px;">🔋</div>
+            <div style="font-family:'Clash Display',sans-serif;font-size:.84rem;font-weight:600;color:var(--white);margin-bottom:4px;">Power Bank 65W</div>
+            <div style="font-size:.88rem;color:var(--gold);font-weight:700;margin-bottom:12px;">₦22,000</div>
+            <button onclick="addReco(this)" style="width:100%;height:34px;border-radius:7px;background:var(--ink3);border:1px solid var(--border);color:var(--soft);font-size:.78rem;font-weight:600;transition:border-color .2s,color .2s;">+ Add</button>
+          </div>
+          <div style="padding:20px;border-right:1px solid var(--border);text-align:center;">
+            <div style="font-size:2rem;margin-bottom:8px;">🛡️</div>
+            <div style="font-family:'Clash Display',sans-serif;font-size:.84rem;font-weight:600;color:var(--white);margin-bottom:4px;">Phone Case Armor</div>
+            <div style="font-size:.88rem;color:var(--gold);font-weight:700;margin-bottom:12px;">₦4,500</div>
+            <button onclick="addReco(this)" style="width:100%;height:34px;border-radius:7px;background:var(--ink3);border:1px solid var(--border);color:var(--soft);font-size:.78rem;font-weight:600;transition:border-color .2s,color .2s;">+ Add</button>
+          </div>
+          <div style="padding:20px;text-align:center;">
+            <div style="font-size:2rem;margin-bottom:8px;">🔌</div>
+            <div style="font-family:'Clash Display',sans-serif;font-size:.84rem;font-weight:600;color:var(--white);margin-bottom:4px;">USB-C Fast Charger</div>
+            <div style="font-size:.88rem;color:var(--gold);font-weight:700;margin-bottom:12px;">₦6,500</div>
+            <button onclick="addReco(this)" style="width:100%;height:34px;border-radius:7px;background:var(--ink3);border:1px solid var(--border);color:var(--soft);font-size:.78rem;font-weight:600;transition:border-color .2s,color .2s;">+ Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHECKOUT VIEW ── -->
+    <div id="checkoutView" style="display:none;">
+      <div class="panel">
+
+        <!-- Contact -->
+        <div class="form-section">
+          <div class="fs-title"><span class="fs-num">1</span> Contact Information</div>
+          <div class="form-row cols2">
+            <div class="field">
+              <label>First Name <span class="field-req">*</span></label>
+              <input class="finput" type="text" placeholder="Emeka" id="fname"/>
+            </div>
+            <div class="field">
+              <label>Last Name <span class="field-req">*</span></label>
+              <input class="finput" type="text" placeholder="Okafor" id="lname"/>
+            </div>
+          </div>
+          <div class="form-row cols2">
+            <div class="field">
+              <label>Phone Number <span class="field-req">*</span></label>
+              <input class="finput" type="tel" placeholder="0812 345 6789" id="phone"/>
+              <span class="field-hint">For SMS delivery updates</span>
+            </div>
+            <div class="field">
+              <label>Email Address</label>
+              <input class="finput" type="email" placeholder="emeka@gmail.com" id="email"/>
+              <span class="field-hint">For order confirmation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery address -->
+        <div class="form-section">
+          <div class="fs-title"><span class="fs-num">2</span> Delivery Address</div>
+          <div class="form-row">
+            <div class="field">
+              <label>Street Address <span class="field-req">*</span></label>
+              <input class="finput" type="text" placeholder="14 Admiralty Way, Lekki Phase 1" id="address"/>
+            </div>
+          </div>
+          <div class="form-row cols3">
+            <div class="field">
+              <label>City <span class="field-req">*</span></label>
+              <input class="finput" type="text" placeholder="Lagos" id="city" value="Lagos"/>
+            </div>
+            <div class="field">
+              <label>State <span class="field-req">*</span></label>
+              <select class="fselect" id="state">
+                <option>Lagos</option><option>Abuja (FCT)</option><option>Rivers</option>
+                <option>Oyo</option><option>Kano</option><option>Anambra</option>
+                <option>Delta</option><option>Edo</option><option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Closest Landmark</label>
+              <input class="finput" type="text" placeholder="Near Shoprite Lekki"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery method -->
+        <div class="form-section">
+          <div class="fs-title"><span class="fs-num">3</span> Delivery Method</div>
+          <div class="delivery-opts">
+
+            <div class="del-opt selected" onclick="selectDelivery(this,'1500')">
+              <div class="del-radio"><div class="del-radio-inner"></div></div>
+              <div class="del-opt-icon">🚚</div>
+              <div class="del-opt-body">
+                <div class="del-opt-title">Standard Delivery</div>
+                <div class="del-opt-sub">Lagos only · Delivered tomorrow (before 6 PM) · SMS tracking</div>
+              </div>
+              <div class="del-opt-price">₦1,500</div>
+            </div>
+
+            <div class="del-opt" onclick="selectDelivery(this,'3000')">
+              <div class="del-radio"><div class="del-radio-inner"></div></div>
+              <div class="del-opt-icon">⚡</div>
+              <div class="del-opt-body">
+                <div class="del-opt-title">Express Same-Day</div>
+                <div class="del-opt-sub">Lagos only · Order before 12 PM · Delivered today by 8 PM</div>
+              </div>
+              <div class="del-opt-price">₦3,000</div>
+            </div>
+
+            <div class="del-opt" onclick="selectDelivery(this,'0')">
+              <div class="del-radio"><div class="del-radio-inner"></div></div>
+              <div class="del-opt-icon">🏪</div>
+              <div class="del-opt-body">
+                <div class="del-opt-title">Free Pick-Up</div>
+                <div class="del-opt-sub">Admiralty Way, Lekki Phase 1 · Mon–Sat 9am–6pm · Ready in 2 hrs</div>
+              </div>
+              <div class="del-opt-price del-opt-free">FREE</div>
+            </div>
+
+            <div class="del-opt" onclick="selectDelivery(this,'calc')">
+              <div class="del-radio"><div class="del-radio-inner"></div></div>
+              <div class="del-opt-icon">📦</div>
+              <div class="del-opt-body">
+                <div class="del-opt-title">Nationwide — GIG / Aramex</div>
+                <div class="del-opt-sub">Outside Lagos · 2–5 business days · Calculated at payment</div>
+              </div>
+              <div class="del-opt-price">From ₦2,500</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="form-section">
+          <div class="fs-title"><span class="fs-num">4</span> Payment Method</div>
+          <div class="payment-tabs">
+            <button class="pay-tab active" onclick="setPayTab(this,'card')"><span class="pay-tab-icon">💳</span> Card</button>
+            <button class="pay-tab" onclick="setPayTab(this,'transfer')"><span class="pay-tab-icon">🏦</span> Bank Transfer</button>
+            <button class="pay-tab" onclick="setPayTab(this,'ussd')"><span class="pay-tab-icon">📱</span> USSD</button>
+          </div>
+
+          <!-- Card form -->
+          <div id="payCard">
+            <div class="card-form">
+              <div class="field">
+                <label>Card Number</label>
+                <div class="card-number-wrap">
+                  <input class="finput" type="text" placeholder="0000  0000  0000  0000" id="cardNum" maxlength="19" oninput="formatCard(this)"/>
+                  <span class="card-network" id="cardNetwork">VISA</span>
+                </div>
+              </div>
+              <div class="form-row cols2">
+                <div class="field">
+                  <label>Expiry Date</label>
+                  <input class="finput" type="text" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)"/>
+                </div>
+                <div class="field">
+                  <label>CVV</label>
+                  <input class="finput" type="password" placeholder="•••" maxlength="4"/>
+                </div>
+              </div>
+              <div class="field">
+                <label>Name on Card</label>
+                <input class="finput" type="text" placeholder="EMEKA OKAFOR"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bank transfer -->
+          <div id="payTransfer" style="display:none;">
+            <div style="background:var(--ink3);border:1px solid var(--border);border-radius:12px;padding:24px;">
+              <div style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">Transfer exact amount to this account — your order is confirmed automatically on receipt.</div>
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:.88rem;"><span style="color:var(--muted);">Bank</span><span style="color:var(--white);font-weight:600;">Access Bank</span></div>
+                <div style="height:1px;background:var(--border);"></div>
+                <div style="display:flex;justify-content:space-between;font-size:.88rem;"><span style="color:var(--muted);">Account Name</span><span style="color:var(--white);font-weight:600;">ADEY IMPORTS LTD</span></div>
+                <div style="height:1px;background:var(--border);"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:.88rem;">
+                  <span style="color:var(--muted);">Account Number</span>
+                  <span style="display:flex;align-items:center;gap:8px;">
+                    <span style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:var(--gold);">0123456789</span>
+                    <button onclick="copyAccount()" style="height:28px;padding:0 10px;background:var(--ink);border:1px solid var(--border);border-radius:6px;color:var(--soft);font-size:.72rem;transition:border-color .15s,color .15s;" id="copyBtn">Copy</button>
+                  </span>
+                </div>
+                <div style="height:1px;background:var(--border);"></div>
+                <div style="display:flex;justify-content:space-between;font-size:.88rem;"><span style="color:var(--muted);">Amount to Transfer</span><span style="font-family:'Clash Display',sans-serif;color:var(--gold);font-weight:700;font-size:1.1rem;" id="transferAmt">₦140,500</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- USSD -->
+          <div id="payUssd" style="display:none;">
+            <div style="background:var(--ink3);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;">
+              <div style="font-size:.88rem;color:var(--muted);margin-bottom:20px;">Dial the code below from your registered bank line. Works with any Nigerian network.</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div onclick="selectUssd(this)" style="padding:14px 20px;background:var(--ink);border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s;cursor:none;">
+                  <span style="font-size:.9rem;font-weight:600;color:var(--white);">GTBank</span>
+                  <span style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gold);">*737*Amount*AccountNo#</span>
+                </div>
+                <div onclick="selectUssd(this)" style="padding:14px 20px;background:var(--ink);border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s;cursor:none;">
+                  <span style="font-size:.9rem;font-weight:600;color:var(--white);">Access Bank</span>
+                  <span style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gold);">*901*Amount*AccountNo#</span>
+                </div>
+                <div onclick="selectUssd(this)" style="padding:14px 20px;background:var(--ink);border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s;cursor:none;">
+                  <span style="font-size:.9rem;font-weight:600;color:var(--white);">First Bank</span>
+                  <span style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gold);">*894*Amount*AccountNo#</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pay-info-note">
+            🔒 Payments are processed securely by <strong>Paystack</strong>. ADEY never stores your card details. All transactions are encrypted.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN — Order Summary -->
+  <div class="summary-panel" id="summaryPanel">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Order Summary</div>
+      </div>
+
+      <div class="summary-items">
+        <div class="si-row">
+          <div class="si-img">🎧<span class="si-qty" id="siQ1">1</span></div>
+          <div class="si-info"><div class="si-name">Pro Wireless Earbuds ANC</div><div class="si-variant">Black · BT 5.3</div></div>
+          <div class="si-price" id="siP1">₦28,500</div>
+        </div>
+        <div class="si-row">
+          <div class="si-img">📱<span class="si-qty" id="siQ2">1</span></div>
+          <div class="si-info"><div class="si-name">Xiaomi Redmi 13C 128GB</div><div class="si-variant">Midnight Blue</div></div>
+          <div class="si-price" id="siP2">₦92,000</div>
+        </div>
+        <div class="si-row">
+          <div class="si-img">⌚<span class="si-qty" id="siQ3">1</span></div>
+          <div class="si-info"><div class="si-name">Smart Watch Ultra</div><div class="si-variant">Gunmetal · Pre-order</div></div>
+          <div class="si-price" id="siP3">₦38,000</div>
+        </div>
+      </div>
+
+      <div class="summary-calcs">
+        <div class="calc-row"><span class="calc-label">Subtotal (3 items)</span><span class="calc-val" id="subtotalVal">₦158,500</span></div>
+        <div class="calc-row"><span class="calc-label">Savings</span><span class="calc-val calc-discount" id="savingsVal">−₦111,500</span></div>
+        <div class="calc-row" id="couponRow" style="display:none;"><span class="calc-label">Promo ADEY10</span><span class="calc-val calc-discount" id="couponVal">−₦14,250</span></div>
+        <div class="calc-row"><span class="calc-label">Delivery</span><span class="calc-val" id="deliveryVal">₦1,500</span></div>
+        <div class="calc-divider"></div>
+        <div class="calc-total-row">
+          <span class="calc-total-label">Total</span>
+          <span class="calc-total-val" id="totalVal">₦146,250</span>
+        </div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:4px;" id="depositNote">
+          Pre-order deposit today: <strong style="color:var(--sky);">₦11,400</strong> · Balance on arrival
+        </div>
+      </div>
+
+      <div class="summary-cta">
+        <button class="checkout-btn" id="checkoutBtn" onclick="goToCheckout()">
+          Proceed to Checkout →
+        </button>
+        <div class="secure-note">🔒 Secured by Paystack — 256-bit SSL</div>
+        <div class="trust-logos">
+          <div class="trust-logo">VISA</div>
+          <div class="trust-logo">MASTERCARD</div>
+          <div class="trust-logo">PAYSTACK</div>
+          <div class="trust-logo">USSD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<!-- SUCCESS SCREEN (hidden) -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">🎉</div>
+  <div class="success-title">Order Confirmed!</div>
+  <div class="success-sub">
+    Thank you! Your order has been placed and payment received.<br/>
+    You'll get an SMS confirmation shortly at <strong style="color:var(--white);">your number</strong>.
+  </div>
+  <div class="order-ref">
+    <div><div class="or-label">Order Reference</div><div class="or-value">#ADE-20250317-9841</div></div>
+    <div><div class="or-label">Estimated Delivery</div><div style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:var(--jade);">Tomorrow, Mar 18</div></div>
+  </div>
+  <div class="next-steps">
+    <div class="ns-item"><div class="ns-icon">📲</div><div class="ns-text"><strong>SMS Confirmation Sent</strong>Sent to your registered number with order details</div></div>
+    <div class="ns-item"><div class="ns-icon">🚚</div><div class="ns-text"><strong>Dispatched Tomorrow AM</strong>You'll receive a tracking link when your rider picks up</div></div>
+    <div class="ns-item"><div class="ns-icon">🚢</div><div class="ns-text"><strong>Pre-order Tracked Separately</strong>Smart Watch ETA March 22 — we'll SMS you when it clears customs</div></div>
+  </div>
+  <div class="success-btns">
+    <button class="sb-primary" onclick="window.location.href='adey-shop.html'">Continue Shopping</button>
+    <button class="sb-secondary">📦 Track My Order</button>
+  </div>
+</div>
+
+<script>
+/* ── cursor ── */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-5+'px';cur.style.top=my-5+'px';});
+(function a(){rx+=(mx-rx-18)*.14;ry+=(my-ry-18)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('a,button,input,select,.del-opt,.pay-tab,.cart-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='scale(2)';ring.style.transform='scale(1.3)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';ring.style.transform='scale(1)';});
+});
+
+/* ── State ── */
+let prices={q1:28500,q2:92000,q3:38000};
+let qtys={q1:1,q2:1,q3:1};
+let deliveryFee=1500;
+let couponApplied=false;
+let currentStep=1;
+
+function recalc(){
+  const sub=Object.keys(qtys).reduce((s,k)=>s+prices[k]*qtys[k],0);
+  const savings=Math.round(sub*0.41);
+  const coupon=couponApplied?Math.round(sub*0.1):0;
+  const total=sub-coupon+deliveryFee;
+  document.getElementById('subtotalVal').textContent='₦'+sub.toLocaleString('en-NG');
+  document.getElementById('savingsVal').textContent='−₦'+savings.toLocaleString('en-NG');
+  document.getElementById('couponVal').textContent='−₦'+coupon.toLocaleString('en-NG');
+  document.getElementById('deliveryVal').textContent=deliveryFee===0?'FREE':'₦'+deliveryFee.toLocaleString('en-NG');
+  document.getElementById('totalVal').textContent='₦'+total.toLocaleString('en-NG');
+  document.getElementById('pageSub').textContent=Object.values(qtys).reduce((a,b)=>a+b,0)+' items · ₦'+sub.toLocaleString('en-NG');
+  document.getElementById('transferAmt').textContent='₦'+total.toLocaleString('en-NG');
+}
+
+/* qty */
+function changeItemQty(id,d){
+  qtys[id]=Math.max(1,Math.min(10,qtys[id]+d));
+  document.getElementById(id).value=qtys[id];
+  const si=id.replace('q','siQ');
+  document.getElementById(si).textContent=qtys[id];
+  const pKey=id.replace('q','p');
+  const siPKey=id.replace('q','siP');
+  const total=prices[id]*qtys[id];
+  document.getElementById(pKey).textContent='₦'+(total).toLocaleString('en-NG');
+  document.getElementById(siPKey).textContent='₦'+(total).toLocaleString('en-NG');
+  recalc();
+}
+
+/* remove item */
+function removeItem(itemId,basePrice){
+  const el=document.getElementById(itemId);
+  el.style.transition='opacity .3s,transform .3s,max-height .4s';
+  el.style.opacity='0';el.style.transform='translateX(20px)';el.style.maxHeight='0';el.style.overflow='hidden';el.style.padding='0';
+  const qKey='q'+itemId.replace('item','');
+  prices[qKey]=0;qtys[qKey]=0;
+  setTimeout(()=>recalc(),350);
+}
+
+/* coupon */
+function applyCoupon(){
+  const v=document.getElementById('couponInput').value.trim().toUpperCase();
+  if(v==='ADEY10'){
+    couponApplied=true;
+    document.getElementById('couponRow').style.display='flex';
+    document.getElementById('couponInput').value='';
+    document.getElementById('couponInput').disabled=true;
+    document.querySelector('.coupon-btn').textContent='✓ Applied';
+    document.querySelector('.coupon-btn').style.color='var(--jade)';
+    document.querySelector('.coupon-btn').style.borderColor='var(--jade)';
+    recalc();
+  } else {
+    document.getElementById('couponInput').classList.add('error');
+    document.querySelector('.coupon-btn').textContent='Invalid';
+    document.querySelector('.coupon-btn').style.color='var(--ember)';
+    setTimeout(()=>{
+      document.getElementById('couponInput').classList.remove('error');
+      document.querySelector('.coupon-btn').textContent='Apply';
+      document.querySelector('.coupon-btn').style.color='';
+      document.querySelector('.coupon-btn').style.borderColor='';
+    },2000);
+  }
+}
+
+/* delivery */
+function selectDelivery(el,fee){
+  document.querySelectorAll('.del-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  deliveryFee=fee==='calc'?2500:fee==='0'?0:parseInt(fee);
+  recalc();
+}
+
+/* step navigation */
+function setStepUI(step){
+  for(let i=1;i<=4;i++){
+    const si=document.getElementById('step'+i+'Item');
+    const sc=document.getElementById('step'+i+'Circle');
+    const ln=document.getElementById('line'+i);
+    si.className='step-item'+(i===step?' active':i<step?' done':'');
+    if(ln){ln.className='step-line'+(i<step?' done':'');}
+    if(i<step){sc.textContent='✓';}
+    else if(i>step){sc.textContent=i;}
+  }
+}
+
+function goToCheckout(){
+  currentStep=2;
+  setStepUI(2);
+  document.getElementById('cartView').style.display='none';
+  document.getElementById('checkoutView').style.display='block';
+  document.getElementById('pageTitle').textContent='Checkout';
+  // update CTA
+  document.getElementById('checkoutBtn').textContent='Place Order →';
+  document.getElementById('checkoutBtn').onclick=validateAndPay;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validateAndPay(){
+  const fname=document.getElementById('fname').value.trim();
+  const phone=document.getElementById('phone').value.trim();
+  const address=document.getElementById('address').value.trim();
+  let ok=true;
+  [[fname,'fname'],[phone,'phone'],[address,'address']].forEach(([v,id])=>{
+    const el=document.getElementById(id);
+    if(!v){el.classList.add('error');ok=false;}
+    else{el.classList.remove('error');el.classList.add('valid');}
+  });
+  if(!ok){
+    document.getElementById('fname').closest('.panel').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  // simulate payment processing
+  currentStep=3;setStepUI(3);
+  document.getElementById('checkoutBtn').textContent='⟳ Processing…';
+  document.getElementById('checkoutBtn').disabled=true;
+  setTimeout(()=>{
+    currentStep=4;setStepUI(4);
+    document.getElementById('mainLayout').style.display='none';
+    document.getElementById('pageTop').style.display='none';
+    document.getElementById('successScreen').classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  },2200);
+}
+
+/* payment tabs */
+function setPayTab(btn,type){
+  document.querySelectorAll('.pay-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('payCard').style.display=type==='card'?'block':'none';
+  document.getElementById('payTransfer').style.display=type==='transfer'?'block':'none';
+  document.getElementById('payUssd').style.display=type==='ussd'?'block':'none';
+}
+
+/* card formatting */
+function formatCard(el){
+  let v=el.value.replace(/\D/g,'').substring(0,16);
+  el.value=v.replace(/(.{4})/g,'$1  ').trim();
+  const net=document.getElementById('cardNetwork');
+  if(v[0]==='4'){net.textContent='VISA';net.style.color='#1A8FD1';}
+  else if(v[0]==='5'){net.textContent='MC';net.style.color='#E84B1A';}
+  else if(v[0]==='6'){net.textContent='VERVE';net.style.color='#00BFA5';}
+  else{net.textContent='';};
+}
+function formatExpiry(el){
+  let v=el.value.replace(/\D/g,'').substring(0,4);
+  if(v.length>=3)el.value=v.substring(0,2)+' / '+v.substring(2);
+  else el.value=v;
+}
+
+/* copy account */
+function copyAccount(){
+  navigator.clipboard.writeText('0123456789').catch(()=>{});
+  const btn=document.getElementById('copyBtn');
+  btn.textContent='Copied!';btn.style.color='var(--jade)';btn.style.borderColor='var(--jade)';
+  setTimeout(()=>{btn.textContent='Copy';btn.style.color='';btn.style.borderColor='';},2000);
+}
+
+/* USSD row select */
+function selectUssd(el){
+  document.querySelectorAll('#payUssd [onclick]').forEach(r=>r.style.borderColor='var(--border)');
+  el.style.borderColor='var(--gold)';
+}
+
+/* quick add recommendations */
+function addReco(btn){
+  btn.textContent='✓ Added';btn.style.borderColor='var(--jade)';btn.style.color='var(--jade)';
+  document.getElementById('cartCount').textContent=parseInt(document.getElementById('cartCount').textContent)+1;
+}
+
+recalc();
+</script>
+  <script src="adey-api.js"></script>
+  <script src="adey-checkout-integration.js"></script>
+</body>
+</html>

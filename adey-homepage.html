@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADEY — Quality Imports, Lagos Prices</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ─────────────────────────────────────────
+   ADEY DESIGN SYSTEM
+───────────────────────────────────────── */
+:root {
+  --ink:      #0A0D0F;
+  --ink2:     #141A1F;
+  --ink3:     #1C2530;
+  --border:   #222D38;
+  --muted:    #4A6072;
+  --soft:     #8AA0B0;
+  --body:     #C8D8E4;
+  --white:    #F0F6FA;
+  --gold:     #F0A500;
+  --gold2:    #FFCC55;
+  --ember:    #E84B1A;
+  --jade:     #00BFA5;
+  --sky:      #1A8FD1;
+  --tag-h:    56px;
+  --r:        14px;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--body);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* custom cursor */
+.cursor {
+  width: 10px; height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform .15s ease, background .2s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--gold);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transition: top .12s ease, left .12s ease, transform .2s, border-color .2s;
+  opacity: .5;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+button { cursor: none; font-family: inherit; }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--ink2); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+
+/* ─────────────────────────────────────────
+   NAV
+───────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  height: 72px;
+  background: rgba(10,13,15,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.nav-logo svg { width: 36px; height: 36px; }
+
+.nav-brand {
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: -.01em;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 36px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: .88rem;
+  font-weight: 500;
+  color: var(--soft);
+  transition: color .2s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1.5px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .25s ease;
+}
+
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-actions {
+  display: flex; align-items: center; gap: 14px;
+}
+
+.btn-ghost {
+  height: 40px; padding: 0 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--soft);
+  font-size: .85rem;
+  font-weight: 500;
+  transition: border-color .2s, color .2s;
+}
+.btn-ghost:hover { border-color: var(--gold); color: var(--white); }
+
+.btn-primary {
+  height: 40px; padding: 0 22px;
+  background: var(--gold);
+  border: none;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: .85rem;
+  font-weight: 700;
+  transition: background .2s, transform .15s;
+  display: flex; align-items: center; gap: 7px;
+}
+.btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+
+.cart-btn {
+  position: relative;
+  width: 40px; height: 40px;
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--soft);
+  font-size: 1.1rem;
+  transition: border-color .2s, color .2s;
+}
+.cart-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.cart-badge {
+  position: absolute; top: -5px; right: -5px;
+  width: 17px; height: 17px;
+  background: var(--ember);
+  border-radius: 50%;
+  font-size: .6rem;
+  font-weight: 800;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--ink);
+}
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  padding: 72px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+/* geometric bg */
+.hero-bg {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(240,165,0,.12) 0%, transparent 65%);
+  border-radius: 50%;
+}
+
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -100px; left: 30%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,191,165,.07) 0%, transparent 65%);
+  border-radius: 50%;
+}
+
+.hero-grid-lines {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(34,45,56,.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,45,56,.6) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+}
+
+/* left side */
+.hero-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 64px 80px 80px;
+  position: relative; z-index: 1;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(240,165,0,.1);
+  border: 1px solid rgba(240,165,0,.3);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+  width: fit-content;
+  animation: fadeUp .7s ease both;
+}
+
+.eyebrow-dot {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .4; transform: scale(.7); }
+}
+
+.hero-h1 {
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.8rem, 4.5vw, 4.4rem);
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  color: var(--white);
+  margin-bottom: 24px;
+  animation: fadeUp .7s .1s ease both;
+}
+
+.hero-h1 .hl {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 60%, var(--ember) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--soft);
+  max-width: 460px;
+  margin-bottom: 44px;
+  font-weight: 400;
+  animation: fadeUp .7s .18s ease both;
+}
+
+.hero-ctas {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 56px;
+  animation: fadeUp .7s .26s ease both;
+}
+
+.cta-main {
+  height: 52px; padding: 0 32px;
+  background: var(--gold);
+  border: none; border-radius: 10px;
+  color: var(--ink);
+  font-size: .95rem;
+  font-weight: 800;
+  display: flex; align-items: center; gap: 8px;
+  transition: background .2s, transform .15s, box-shadow .2s;
+  box-shadow: 0 0 0 rgba(240,165,0,0);
+}
+.cta-main:hover {
+  background: var(--gold2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(240,165,0,.3);
+}
+
+.cta-secondary {
+  height: 52px; padding: 0 28px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--body);
+  font-size: .95rem;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  transition: border-color .2s, color .2s, transform .15s;
+}
+.cta-secondary:hover {
+  border-color: var(--jade);
+  color: var(--jade);
+  transform: translateY(-2px);
+}
+
+.hero-trust {
+  display: flex; align-items: center; gap: 20px;
+  animation: fadeUp .7s .34s ease both;
+}
+
+.trust-avatars {
+  display: flex;
+}
+.trust-avatars span {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--ink3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-left: -10px;
+}
+.trust-avatars span:first-child { margin-left: 0; }
+
+.trust-text { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+.trust-text strong { color: var(--body); font-weight: 600; }
+
+/* right side */
+.hero-right {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  padding: 80px 80px 80px 0;
+  animation: fadeIn .9s .2s ease both;
+}
+
+.hero-visual {
+  position: relative; width: 100%; max-width: 500px;
+}
+
+/* Product showcase card */
+.showcase-card {
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.showcase-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #1C2530 0%, #0F1A24 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.showcase-img::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(240,165,0,.15), transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(0,191,165,.1), transparent 50%);
+}
+
+.product-placeholder {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 24px;
+  width: 100%;
+}
+
+.prod-box {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; font-size: 2rem;
+  transition: transform .3s, border-color .3s;
+  animation: floatBox 3s ease infinite;
+  position: relative; overflow: hidden;
+}
+
+.prod-box::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(240,165,0,.06), transparent);
+}
+
+.prod-box:nth-child(2) { animation-delay: .5s; }
+.prod-box:nth-child(3) { animation-delay: 1s; }
+.prod-box:nth-child(4) { animation-delay: 1.5s; }
+
+.prod-box:hover { transform: scale(1.04); border-color: rgba(240,165,0,.4); }
+
+.prod-label {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@keyframes floatBox {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+.showcase-body { padding: 24px; }
+
+.showcase-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.showcase-meta {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.showcase-price {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.showcase-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .75rem; font-weight: 600;
+  color: var(--jade);
+}
+
+.status-dot {
+  width: 7px; height: 7px;
+  background: var(--jade);
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+
+/* floating badges */
+.float-badge {
+  position: absolute;
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  backdrop-filter: blur(10px);
+  animation: floatBadge 4s ease infinite;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+
+.badge-top-right {
+  top: 24px; right: -24px;
+  animation-delay: .5s;
+}
+
+.badge-bottom-left {
+  bottom: 80px; left: -28px;
+  animation-delay: 1.5s;
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%       { transform: translateY(-6px) rotate(.5deg); }
+  66%       { transform: translateY(3px) rotate(-.5deg); }
+}
+
+.badge-icon { font-size: 1.3rem; }
+.badge-text { font-size: .78rem; line-height: 1.4; }
+.badge-text strong { display: block; color: var(--white); font-weight: 700; font-size: .82rem; }
+.badge-text span { color: var(--muted); }
+
+/* ─────────────────────────────────────────
+   MARQUEE TICKER
+───────────────────────────────────────── */
+.ticker {
+  background: var(--gold);
+  overflow: hidden;
+  height: 42px;
+  display: flex; align-items: center;
+}
+
+.ticker-track {
+  display: flex; gap: 0;
+  animation: ticker 22s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  display: flex; align-items: center; gap: 18px;
+  padding: 0 32px;
+  font-family: 'Clash Display', sans-serif;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.ticker-sep {
+  width: 5px; height: 5px;
+  background: var(--ink);
+  border-radius: 50%;
+  opacity: .4;
+}
+
+/* ─────────────────────────────────────────
+   STATS BAR
+───────────────────────────────────────── */
+.stats-bar {
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.stat-item {
+  padding: 36px 48px;
+  border-right: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: background .2s;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: var(--ink3); }
+
+.stat-item::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .3s ease;
+}
+.stat-item:hover::before { transform: scaleX(1); }
+
+.stat-num {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-num span { color: var(--gold); }
+
+.stat-label { font-size: .82rem; color: var(--muted); font-weight: 500; }
+
+/* ─────────────────────────────────────────
+   CATEGORIES
+───────────────────────────────────────── */
+.section {
+  padding: 100px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.s-eyebrow {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.s-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -.02em;
+  margin-bottom: 8px;
+}
+
+.s-sub {
+  font-size: .95rem;
+  color: var(--muted);
+  margin-bottom: 56px;
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+.cats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+}
+
+.cat-card {
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 18px;
+  text-align: center;
+  transition: border-color .2s, transform .2s, background .2s;
+  cursor: none;
+  position: relative; overflow: hidden;
+}
+
+.cat-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(240,165,0,.06), transparent);
+  opacity: 0; transition: opacity .3s;
+}
+
+.cat-card:hover {
+  border-color: rgba(240,165,0,.5);
+  transform: translateY(-4px);
+  background: var(--ink3);
+}
+.cat-card:hover::before { opacity: 1; }
+
+.cat-icon { font-size: 2.2rem; margin-bottom: 12px; }
+.cat-name {
+  font-family: 'Clash Display', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+.cat-count { font-size: .75rem; color: var(--muted); }
+
+/* ─────────────────────────────────────────
+   FEATURED PRODUCTS
+───────────────────────────────────────── */
+.products-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 56px;
+}
+
+.view-all {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .85rem; font-weight: 600;
+  color: var(--gold);
+  border-bottom: 1px solid rgba(240,165,0,.3);
+  padding-bottom: 2px;
+  transition: border-color .2s;
+}
+.view-all:hover { border-color: var(--gold); }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.product-card {
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color .25s, transform .25s;
+  cursor: none;
+  position: relative;
+}
+
+.product-card:hover {
+  border-color: rgba(240,165,0,.4);
+  transform: translateY(-5px);
+}
+
+.product-card:hover .pc-actions { opacity: 1; transform: translateY(0); }
+
+.pc-img {
+  aspect-ratio: 1;
+  background: var(--ink3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem;
+  position: relative; overflow: hidden;
+}
+
+.pc-img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(240,165,0,.08), transparent 60%);
+}
+
+.pc-badge {
+  position: absolute; top: 12px; left: 12px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.badge-new     { background: rgba(240,165,0,.2); color: var(--gold); border: 1px solid rgba(240,165,0,.4); }
+.badge-transit { background: rgba(26,143,209,.2); color: var(--sky); border: 1px solid rgba(26,143,209,.4); }
+.badge-preorder{ background: rgba(232,75,26,.2); color: var(--ember); border: 1px solid rgba(232,75,26,.4); }
+.badge-hot     { background: rgba(0,191,165,.2); color: var(--jade); border: 1px solid rgba(0,191,165,.4); }
+
+.pc-actions {
+  position: absolute; bottom: 12px; left: 12px; right: 12px;
+  display: flex; gap: 8px;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .25s, transform .25s;
+}
+
+.pca-btn {
+  flex: 1; height: 38px;
+  border-radius: 8px;
+  border: none;
+  font-size: .8rem;
+  font-weight: 700;
+  transition: background .15s, transform .15s;
+}
+
+.pca-main { background: var(--gold); color: var(--ink); }
+.pca-main:hover { background: var(--gold2); transform: translateY(-1px); }
+
+.pca-wish {
+  width: 38px; flex: 0 0 38px;
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  color: var(--soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.pca-wish:hover { border-color: var(--ember); color: var(--ember); }
+
+.pc-body { padding: 18px; }
+
+.pc-cat {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.pc-name {
+  font-family: 'Clash Display', sans-serif;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.pc-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.pc-price {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.pc-old {
+  font-size: .78rem;
+  color: var(--muted);
+  text-decoration: line-through;
+  margin-left: 6px;
+}
+
+.pc-rating {
+  display: flex; align-items: center; gap: 4px;
+  font-size: .78rem;
+  color: var(--muted);
+}
+
+.pc-stars { color: var(--gold); font-size: .8rem; letter-spacing: -.05em; }
+
+/* ─────────────────────────────────────────
+   SHIPMENT BANNER
+───────────────────────────────────────── */
+.shipment-section {
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px;
+}
+
+.shipment-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+
+.ship-track {
+  display: flex; flex-direction: column; gap: 0;
+}
+
+.ship-step {
+  display: grid; grid-template-columns: 48px 1fr; gap: 20px; padding-bottom: 32px; position: relative;
+}
+.ship-step:last-child { padding-bottom: 0; }
+
+.ship-step::before {
+  content: '';
+  position: absolute; left: 23px; top: 48px; bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.ship-step:last-child::before { display: none; }
+
+.ship-step.done::before { background: var(--jade); }
+.ship-step.active::before { background: linear-gradient(180deg, var(--gold), var(--border)); }
+
+.step-dot {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  position: relative; z-index: 1;
+  border: 2px solid var(--border);
+  background: var(--ink);
+}
+
+.ship-step.done .step-dot { background: rgba(0,191,165,.15); border-color: var(--jade); }
+.ship-step.active .step-dot {
+  background: rgba(240,165,0,.15); border-color: var(--gold);
+  animation: stepPulse 2s ease infinite;
+}
+
+@keyframes stepPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(240,165,0,.3); }
+  50%       { box-shadow: 0 0 0 8px rgba(240,165,0,0); }
+}
+
+.step-info { padding-top: 10px; }
+.step-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: .95rem; font-weight: 600;
+  color: var(--white); margin-bottom: 3px;
+}
+.ship-step.done .step-title { color: var(--jade); }
+.ship-step.active .step-title { color: var(--gold); }
+
+.step-sub { font-size: .8rem; color: var(--muted); }
+
+.ship-right h2 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -.02em;
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+
+.ship-right p { font-size: .95rem; color: var(--muted); line-height: 1.75; margin-bottom: 32px; }
+
+.ship-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 48px; padding: 0 28px;
+  background: transparent;
+  border: 1.5px solid var(--gold);
+  border-radius: 10px;
+  color: var(--gold);
+  font-size: .9rem;
+  font-weight: 700;
+  transition: background .2s, color .2s, transform .15s;
+}
+.ship-cta:hover { background: var(--gold); color: var(--ink); transform: translateY(-2px); }
+
+/* ─────────────────────────────────────────
+   HOW IT WORKS
+───────────────────────────────────────── */
+.how-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+}
+
+.how-step {
+  background: var(--ink2);
+  padding: 44px 32px;
+  position: relative;
+  transition: background .2s;
+}
+.how-step:hover { background: var(--ink3); }
+
+.how-num {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--border);
+  line-height: 1;
+  margin-bottom: 20px;
+  transition: color .2s;
+}
+.how-step:hover .how-num { color: rgba(240,165,0,.3); }
+
+.how-icon { font-size: 1.8rem; margin-bottom: 14px; }
+
+.how-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.05rem; font-weight: 600;
+  color: var(--white); margin-bottom: 10px;
+}
+
+.how-desc { font-size: .85rem; color: var(--muted); line-height: 1.65; }
+
+/* ─────────────────────────────────────────
+   PREORDER SECTION
+───────────────────────────────────────── */
+.preorder-section {
+  background: var(--ink2);
+  border-top: 1px solid var(--border);
+  padding: 100px 80px;
+}
+
+.po-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+
+.po-visual {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+
+.po-card {
+  background: var(--ink3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: border-color .2s, transform .2s;
+}
+.po-card:hover { border-color: rgba(240,165,0,.4); transform: translateY(-3px); }
+.po-card:nth-child(2) { transform: translateY(20px); }
+.po-card:nth-child(2):hover { transform: translateY(16px); }
+
+.po-icon { font-size: 2rem; margin-bottom: 12px; }
+.po-name {
+  font-family: 'Clash Display', sans-serif;
+  font-size: .9rem; font-weight: 600;
+  color: var(--white); margin-bottom: 6px;
+}
+.po-price { font-size: .85rem; color: var(--gold); font-weight: 600; margin-bottom: 12px; }
+.po-bar-bg { height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.po-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--gold), var(--ember)); }
+.po-bar-label { font-size: .72rem; color: var(--muted); margin-top: 6px; }
+.po-eta {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .72rem; color: var(--sky); font-weight: 600;
+  margin-top: 10px;
+}
+
+.po-text h2 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+  font-weight: 700; color: var(--white);
+  letter-spacing: -.02em; margin-bottom: 16px; line-height: 1.15;
+}
+.po-text p { font-size: .95rem; color: var(--muted); line-height: 1.75; margin-bottom: 12px; }
+
+.po-perks { display: flex; flex-direction: column; gap: 12px; margin: 28px 0 36px; }
+.perk {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: .88rem; color: var(--body); line-height: 1.5;
+}
+.perk-icon {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: rgba(240,165,0,.12);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem;
+}
+
+/* ─────────────────────────────────────────
+   TRUST SECTION
+───────────────────────────────────────── */
+.trust-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+
+.trust-card {
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 36px 32px;
+  transition: border-color .2s, transform .2s;
+}
+.trust-card:hover { border-color: rgba(240,165,0,.3); transform: translateY(-3px); }
+
+.tc-icon { font-size: 2rem; margin-bottom: 18px; }
+.tc-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.1rem; font-weight: 600; color: var(--white); margin-bottom: 10px;
+}
+.tc-desc { font-size: .88rem; color: var(--muted); line-height: 1.7; }
+
+/* ─────────────────────────────────────────
+   NEWSLETTER
+───────────────────────────────────────── */
+.newsletter {
+  background: linear-gradient(135deg, var(--ink3) 0%, #0F1A24 100%);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+
+.newsletter::before {
+  content: '';
+  position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(240,165,0,.08), transparent 70%);
+  pointer-events: none;
+}
+
+.nl-inner { max-width: 560px; margin: 0 auto; position: relative; z-index: 1; }
+
+.newsletter h2 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  font-weight: 700; color: var(--white);
+  letter-spacing: -.02em; margin-bottom: 12px;
+}
+
+.newsletter p { font-size: .95rem; color: var(--muted); margin-bottom: 32px; line-height: 1.65; }
+
+.nl-form {
+  display: flex; gap: 10px;
+  background: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.nl-input {
+  flex: 1; height: 44px; padding: 0 16px;
+  background: transparent; border: none;
+  color: var(--white); font-size: .9rem;
+  font-family: inherit; outline: none;
+}
+.nl-input::placeholder { color: var(--muted); }
+
+.nl-btn {
+  height: 44px; padding: 0 24px;
+  background: var(--gold); border: none; border-radius: 8px;
+  color: var(--ink); font-size: .88rem; font-weight: 700;
+  transition: background .15s;
+}
+.nl-btn:hover { background: var(--gold2); }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+footer {
+  background: var(--ink);
+  padding: 80px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+  max-width: 1400px; margin: 0 auto 60px;
+}
+
+.footer-brand { }
+.fb-logo {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.fb-name {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.5rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.fb-desc { font-size: .85rem; color: var(--muted); line-height: 1.7; max-width: 280px; margin-bottom: 24px; }
+
+.social-links { display: flex; gap: 10px; }
+.social-link {
+  width: 36px; height: 36px;
+  background: var(--ink3); border: 1px solid var(--border); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; color: var(--muted);
+  transition: border-color .2s, color .2s;
+}
+.social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+.footer-col h4 {
+  font-family: 'Clash Display', sans-serif;
+  font-size: .85rem; font-weight: 600; color: var(--white);
+  letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.footer-col li a { font-size: .85rem; color: var(--muted); transition: color .2s; }
+.footer-col li a:hover { color: var(--gold); }
+
+.footer-bottom {
+  max-width: 1400px; margin: 0 auto;
+  padding-top: 32px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.footer-bottom p { font-size: .8rem; color: var(--muted); }
+.payment-icons { display: flex; gap: 8px; align-items: center; }
+.pay-icon {
+  height: 26px; padding: 0 10px;
+  background: var(--ink3); border: 1px solid var(--border); border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .68rem; font-weight: 700; color: var(--muted);
+}
+
+/* ─────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* mobile nav toggle */
+.menu-toggle { display: none; }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-left { padding: 60px 40px; }
+  .hero-right { display: none; }
+  .cats-grid { grid-template-columns: repeat(3, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .shipment-inner, .po-inner { grid-template-columns: 1fr; gap: 48px; }
+  .how-grid { grid-template-columns: repeat(2, 1fr); }
+  .trust-grid { grid-template-columns: 1fr 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .section { padding: 80px 40px; }
+  .shipment-section, .preorder-section, .newsletter, footer { padding: 80px 40px; }
+}
+
+@media (max-width: 640px) {
+  .cats-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-grid { grid-template-columns: 1fr; }
+  .stats-bar { grid-template-columns: 1fr 1fr; }
+  .how-grid { grid-template-columns: 1fr; }
+  .trust-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .hero-left { padding: 48px 24px; }
+  .section { padding: 64px 24px; }
+  .shipment-section, .preorder-section, .newsletter, footer { padding: 64px 24px; }
+  .nl-form { flex-direction: column; }
+  .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+  body { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+}
+</style>
+</head>
+<body>
+  <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="nlg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#F0A500"/>
+          <stop offset="100%" stop-color="#E84B1A"/>
+        </linearGradient>
+      </defs>
+      <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="url(#nlg)" stroke-width="1.5"/>
+      <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+            font-family="serif" font-weight="700" font-size="13" fill="#F0A500">A</text>
+    </svg>
+    <span class="nav-brand">ADEY</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#">Shop</a></li>
+    <li><a href="#">In Transit</a></li>
+    <li><a href="#">Pre-Order</a></li>
+    <li><a href="#">Track Order</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" data-auth-hide onclick="location.href='adey-auth.html'">Sign In</button>
+    <a href="adey-dashboard.html" class="btn-ghost" data-auth-show style="display:none">Hi, <span data-user-name>there</span> 👤</a>
+    <button class="btn-primary">Get Started →</button>
+    <button class="cart-btn">🛒<span class="cart-badge" data-cart-count>3</span></button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid-lines"></div>
+  </div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-dot"></span>
+      Now Shipping · Lagos, Nigeria
+    </div>
+    <h1 class="hero-h1">
+      Quality Goods<br/>
+      <span class="hl">Direct From China.</span><br/>
+      Lagos Prices.
+    </h1>
+    <p class="hero-p">
+      We source premium products directly from Chinese manufacturers and ship them to Lagos —
+      cheaper clearance, lower prices, better quality. Shop what's in stock, track what's on the way, or pre-order what's coming.
+    </p>
+    <div class="hero-ctas">
+      <button class="cta-main">Shop Now →</button>
+      <button class="cta-secondary">📦 Track My Order</button>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-avatars">
+        <span>AK</span><span>BO</span><span>CF</span><span>DI</span><span>+</span>
+      </div>
+      <div class="trust-text">
+        <strong>2,400+ happy customers</strong><br/>
+        Trusted across Lagos & beyond
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-visual">
+      <div class="showcase-card">
+        <div class="showcase-img">
+          <div class="product-placeholder">
+            <div class="prod-box">🎧<span class="prod-label">Audio</span></div>
+            <div class="prod-box">📱<span class="prod-label">Phones</span></div>
+            <div class="prod-box">💡<span class="prod-label">Gadgets</span></div>
+            <div class="prod-box">👟<span class="prod-label">Fashion</span></div>
+          </div>
+        </div>
+        <div class="showcase-body">
+          <div class="showcase-title">New Arrivals — Week 11</div>
+          <div class="showcase-meta">
+            <div class="showcase-price">₦18,500</div>
+            <div class="showcase-status">
+              <span class="status-dot"></span> 47 items in stock
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating badges -->
+      <div class="float-badge badge-top-right">
+        <div class="badge-icon">🚢</div>
+        <div class="badge-text">
+          <strong>In Transit</strong>
+          <span>ETA: 5 days</span>
+        </div>
+      </div>
+
+      <div class="float-badge badge-bottom-left">
+        <div class="badge-icon">✅</div>
+        <div class="badge-text">
+          <strong>Order Confirmed</strong>
+          <span>₦42,000 paid</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TICKER ── -->
+<div class="ticker">
+  <div class="ticker-track">
+    <!-- duplicated for seamless loop -->
+    <div class="ticker-item">Free Lagos Delivery Above ₦30,000 <span class="ticker-sep"></span></div>
+    <div class="ticker-item">New Arrivals Every Week <span class="ticker-sep"></span></div>
+    <div class="ticker-item">Pre-Order Now — Pay On Arrival <span class="ticker-sep"></span></div>
+    <div class="ticker-item">Verified China Supplier Network <span class="ticker-sep"></span></div>
+    <div class="ticker-item">SMS + WhatsApp Order Updates <span class="ticker-sep"></span></div>
+    <div class="ticker-item">Paystack Secure Checkout <span class="ticker-sep"></span></div>
+    <div class="ticker-item">Free Lagos Delivery Above ₦30,000 <span class="ticker-sep"></span></div>
+    <div class="ticker-item">New Arrivals Every Week <span class="ticker-sep"></span></div>
+    <div class="ticker-item">Pre-Order Now — Pay On Arrival <span class="ticker-sep"></span></div>
+    <div class="ticker-item">Verified China Supplier Network <span class="ticker-sep"></span></div>
+    <div class="ticker-item">SMS + WhatsApp Order Updates <span class="ticker-sep"></span></div>
+    <div class="ticker-item">Paystack Secure Checkout <span class="ticker-sep"></span></div>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num">2,<span>400</span>+</div>
+    <div class="stat-label">Happy Customers</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num"><span>850</span>+</div>
+    <div class="stat-label">Products In Stock</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num"><span>12</span></div>
+    <div class="stat-label">Shipments in Transit</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num"><span>48</span>hr</div>
+    <div class="stat-label">Average Lagos Delivery</div>
+  </div>
+</div>
+
+<!-- ── CATEGORIES ── -->
+<div class="section">
+  <div class="s-eyebrow">Browse by Category</div>
+  <div class="s-title">What We Carry</div>
+  <div class="s-sub">From consumer electronics to fashion, kitchen appliances to beauty — all sourced directly.</div>
+  <div class="cats-grid">
+    <div class="cat-card"><div class="cat-icon">📱</div><div class="cat-name">Phones & Tablets</div><div class="cat-count">142 items</div></div>
+    <div class="cat-card"><div class="cat-icon">🎧</div><div class="cat-name">Audio & Earphones</div><div class="cat-count">89 items</div></div>
+    <div class="cat-card"><div class="cat-icon">💡</div><div class="cat-name">Smart Gadgets</div><div class="cat-count">203 items</div></div>
+    <div class="cat-card"><div class="cat-icon">👟</div><div class="cat-name">Fashion & Shoes</div><div class="cat-count">317 items</div></div>
+    <div class="cat-card"><div class="cat-icon">🏠</div><div class="cat-name">Home & Kitchen</div><div class="cat-count">175 items</div></div>
+    <div class="cat-card"><div class="cat-icon">💄</div><div class="cat-name">Beauty & Care</div><div class="cat-count">96 items</div></div>
+  </div>
+</div>
+
+<!-- ── PRODUCTS ── -->
+<div class="section" style="padding-top:0">
+  <div class="products-header">
+    <div>
+      <div class="s-eyebrow">This Week's Picks</div>
+      <div class="s-title" style="margin-bottom:0">Featured Products</div>
+    </div>
+    <a href="#" class="view-all">View All Products →</a>
+  </div>
+  <div class="products-grid">
+
+    <div class="product-card">
+      <div class="pc-img">
+        🎧
+        <span class="pc-badge badge-hot">🔥 Hot</span>
+        <div class="pc-actions">
+          <button class="pca-btn pca-main">Add to Cart</button>
+          <button class="pca-btn pca-wish">♡</button>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat">Audio</div>
+        <div class="pc-name">Pro Wireless Earbuds ANC Noise Cancelling</div>
+        <div class="pc-footer">
+          <div><span class="pc-price">₦28,500</span><span class="pc-old">₦45,000</span></div>
+          <div class="pc-rating"><span class="pc-stars">★★★★★</span> 4.9</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="pc-img">
+        📱
+        <span class="pc-badge badge-new">New</span>
+        <div class="pc-actions">
+          <button class="pca-btn pca-main">Add to Cart</button>
+          <button class="pca-btn pca-wish">♡</button>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat">Phones</div>
+        <div class="pc-name">Xiaomi Redmi 13C 128GB Smartphone</div>
+        <div class="pc-footer">
+          <div><span class="pc-price">₦92,000</span><span class="pc-old">₦130,000</span></div>
+          <div class="pc-rating"><span class="pc-stars">★★★★☆</span> 4.7</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="pc-img">
+        💡
+        <span class="pc-badge badge-transit">In Transit</span>
+        <div class="pc-actions">
+          <button class="pca-btn pca-main">Pre-Order</button>
+          <button class="pca-btn pca-wish">♡</button>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat">Smart Gadgets</div>
+        <div class="pc-name">Smart LED Strip 10m RGB App-Controlled</div>
+        <div class="pc-footer">
+          <div><span class="pc-price">₦14,200</span><span class="pc-old">₦22,000</span></div>
+          <div class="pc-rating"><span class="pc-stars">★★★★★</span> 4.8</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="pc-img">
+        ⌚
+        <span class="pc-badge badge-preorder">Pre-Order</span>
+        <div class="pc-actions">
+          <button class="pca-btn pca-main">Reserve Now</button>
+          <button class="pca-btn pca-wish">♡</button>
+        </div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat">Wearables</div>
+        <div class="pc-name">Smart Watch Ultra Fitness & Health Monitor</div>
+        <div class="pc-footer">
+          <div><span class="pc-price">₦38,000</span><span class="pc-old">₦60,000</span></div>
+          <div class="pc-rating"><span class="pc-stars">★★★★☆</span> 4.6</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── SHIPMENT ── -->
+<div class="shipment-section">
+  <div class="shipment-inner">
+    <div class="ship-track">
+      <div class="ship-step done">
+        <div class="step-dot">✅</div>
+        <div class="step-info">
+          <div class="step-title">Order Placed in China</div>
+          <div class="step-sub">Mar 8 · Guangzhou Supplier</div>
+        </div>
+      </div>
+      <div class="ship-step done">
+        <div class="step-dot">🏭</div>
+        <div class="step-info">
+          <div class="step-title">Quality Checked & Packed</div>
+          <div class="step-sub">Mar 10 · Ready for dispatch</div>
+        </div>
+      </div>
+      <div class="ship-step active">
+        <div class="step-dot">🚢</div>
+        <div class="step-info">
+          <div class="step-title">Departed Shanghai Port</div>
+          <div class="step-sub">Mar 12 · ETA Lagos: Mar 19</div>
+        </div>
+      </div>
+      <div class="ship-step">
+        <div class="step-dot">🛃</div>
+        <div class="step-info">
+          <div class="step-title">Customs Clearance — Apapa</div>
+          <div class="step-sub">Pending arrival</div>
+        </div>
+      </div>
+      <div class="ship-step">
+        <div class="step-dot">📦</div>
+        <div class="step-info">
+          <div class="step-title">Ready for Pickup / Delivery</div>
+          <div class="step-sub">You'll receive an SMS alert</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ship-right">
+      <h2>Always Know Where<br/>Your Order Is.</h2>
+      <p>Every ADEY shipment is tracked from the moment it leaves China to the moment it lands in Lagos. You get live SMS updates at every stage — no guessing, no chasing.</p>
+      <button class="ship-cta">Track Your Shipment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<div class="section">
+  <div class="s-eyebrow">The Process</div>
+  <div class="s-title">How ADEY Works</div>
+  <div class="s-sub">Four simple steps from browsing to your doorstep.</div>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="how-num">01</div>
+      <div class="how-icon">🛍️</div>
+      <div class="how-title">Browse & Choose</div>
+      <div class="how-desc">Shop in-stock items or browse upcoming shipments. Filter by category, price, or availability.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">02</div>
+      <div class="how-icon">💳</div>
+      <div class="how-title">Pay Securely</div>
+      <div class="how-desc">Checkout with Paystack — card, bank transfer, or USSD. Pre-orders accept a 30% deposit to reserve.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">03</div>
+      <div class="how-icon">🚢</div>
+      <div class="how-title">We Ship & Clear</div>
+      <div class="how-desc">Your goods ship from China and clear customs in Lagos. You get live SMS updates at every stage.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">04</div>
+      <div class="how-icon">🏠</div>
+      <div class="how-title">Delivered to You</div>
+      <div class="how-desc">Pick up from our Lagos hub or get door delivery within 24–48 hours of clearance. Done.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PRE-ORDER ── -->
+<div class="preorder-section">
+  <div class="po-inner">
+    <div class="po-visual">
+      <div class="po-card">
+        <div class="po-icon">🖥️</div>
+        <div class="po-name">IPS 27" Monitor 144Hz</div>
+        <div class="po-price">₦185,000</div>
+        <div class="po-bar-bg"><div class="po-bar-fill" style="width:72%"></div></div>
+        <div class="po-bar-label">72 of 100 slots reserved</div>
+        <div class="po-eta">🚢 ETA: 18 March</div>
+      </div>
+      <div class="po-card">
+        <div class="po-icon">🎮</div>
+        <div class="po-name">Gaming Controller Wireless</div>
+        <div class="po-price">₦32,500</div>
+        <div class="po-bar-bg"><div class="po-bar-fill" style="width:45%"></div></div>
+        <div class="po-bar-label">45 of 100 slots reserved</div>
+        <div class="po-eta">🚢 ETA: 22 March</div>
+      </div>
+      <div class="po-card" style="grid-column: span 2">
+        <div class="po-icon">📷</div>
+        <div class="po-name">4K Action Camera Waterproof</div>
+        <div class="po-price">₦74,000</div>
+        <div class="po-bar-bg"><div class="po-bar-fill" style="width:91%"></div></div>
+        <div class="po-bar-label">91 of 100 slots reserved — almost full!</div>
+        <div class="po-eta">🚢 ETA: 20 March</div>
+      </div>
+    </div>
+    <div class="po-text">
+      <h2>Reserve Before It<br/>Even Arrives.</h2>
+      <p>Our pre-order system lets you secure items from the next shipment before they sell out — with just a 30% deposit.</p>
+      <div class="po-perks">
+        <div class="perk"><div class="perk-icon">🔒</div>Guaranteed allocation — your slot is locked once deposit is paid</div>
+        <div class="perk"><div class="perk-icon">💰</div>Only 30% deposit required upfront — pay the rest on delivery</div>
+        <div class="perk"><div class="perk-icon">📲</div>SMS + WhatsApp alert the moment your item clears customs</div>
+        <div class="perk"><div class="perk-icon">↩️</div>Full refund if shipment is delayed beyond 30 days</div>
+      </div>
+      <button class="cta-main">Browse Pre-Orders →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TRUST ── -->
+<div class="section">
+  <div class="s-eyebrow">Why Choose ADEY</div>
+  <div class="s-title">Built on Trust</div>
+  <div class="trust-grid">
+    <div class="trust-card">
+      <div class="tc-icon">🔐</div>
+      <div class="tc-title">Secure Payments</div>
+      <div class="tc-desc">All transactions processed by Paystack — Nigeria's most trusted payment gateway. We never store your card details.</div>
+    </div>
+    <div class="trust-card">
+      <div class="tc-icon">✅</div>
+      <div class="tc-title">Quality Verified</div>
+      <div class="tc-desc">Every product is inspected at source before packing. Poor quality items are rejected before they ever ship.</div>
+    </div>
+    <div class="trust-card">
+      <div class="tc-icon">📦</div>
+      <div class="tc-title">Real-Time Tracking</div>
+      <div class="tc-desc">Know exactly where your goods are — from Guangzhou to your door in Lagos. Live updates via SMS and WhatsApp.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NEWSLETTER ── -->
+<div class="newsletter">
+  <div class="nl-inner">
+    <h2>Get Notified on New Arrivals</h2>
+    <p>Drop your email and we'll alert you when new shipments clear customs, new categories launch, or flash deals go live.</p>
+    <div class="nl-form">
+      <input class="nl-input" type="email" placeholder="your@email.com"/>
+      <button class="nl-btn">Notify Me →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="fb-logo">
+        <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="#F0A500" stroke-width="1.5"/>
+          <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="serif" font-weight="700" font-size="13" fill="#F0A500">A</text>
+        </svg>
+        <span class="fb-name">ADEY</span>
+      </div>
+      <p class="fb-desc">Quality goods sourced directly from China, shipped and cleared into Lagos at prices that make sense.</p>
+      <div class="social-links">
+        <a class="social-link" href="#">𝕏</a>
+        <a class="social-link" href="#">in</a>
+        <a class="social-link" href="#">📘</a>
+        <a class="social-link" href="#">📸</a>
+        <a class="social-link" href="#">💬</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">All Products</a></li>
+        <li><a href="#">New Arrivals</a></li>
+        <li><a href="#">Pre-Orders</a></li>
+        <li><a href="#">In Transit</a></li>
+        <li><a href="#">Flash Deals</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="#">Sign Up</a></li>
+        <li><a href="#">My Orders</a></li>
+        <li><a href="#">Track Shipment</a></li>
+        <li><a href="#">Wishlist</a></li>
+        <li><a href="#">Settings</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About ADEY</a></li>
+        <li><a href="#">How It Works</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Returns Policy</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 ADEY Imports Ltd. Lagos, Nigeria. All rights reserved.</p>
+    <div class="payment-icons">
+      <div class="pay-icon">PAYSTACK</div>
+      <div class="pay-icon">VISA</div>
+      <div class="pay-icon">MASTERCARD</div>
+      <div class="pay-icon">TRANSFER</div>
+      <div class="pay-icon">USSD</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx - 5 + 'px';
+  cursor.style.top  = my - 5 + 'px';
+});
+
+function animRing() {
+  rx += (mx - rx - 18) * 0.14;
+  ry += (my - ry - 18) * 0.14;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('a, button, .product-card, .cat-card, .trust-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'scale(2.5)';
+    ring.style.transform = 'scale(1.5)';
+    ring.style.borderColor = '#F0A500';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'scale(1)';
+    ring.style.transform = 'scale(1)';
+    ring.style.borderColor = '#F0A500';
+  });
+});
+
+// Cart add
+document.querySelectorAll('.pca-btn.pca-main').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const badge = document.querySelector('.cart-badge');
+    badge.textContent = parseInt(badge.textContent) + 1;
+    btn.textContent = '✓ Added';
+    btn.style.background = '#00BFA5';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      btn.textContent = 'Add to Cart';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 1800);
+  });
+});
+
+// Scroll-reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.product-card, .cat-card, .trust-card, .how-step, .stat-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity .5s ease, transform .5s ease, border-color .25s, background .2s';
+  observer.observe(el);
+});
+</script>
+  <script src="adey-api.js"></script>
+</body>
+</html>

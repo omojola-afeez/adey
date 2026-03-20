@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADEY — My Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0A0D0F;--ink2:#141A1F;--ink3:#1C2530;--border:#222D38;
+  --muted:#4A6072;--soft:#8AA0B0;--body:#C8D8E4;--white:#F0F6FA;
+  --gold:#F0A500;--gold2:#FFCC55;--ember:#E84B1A;--jade:#00BFA5;--sky:#1A8FD1;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--body);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden;cursor:none;min-height:100vh;}
+.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:transform .15s;mix-blend-mode:difference;}
+.cursor-ring{width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;}
+a{color:inherit;text-decoration:none;}
+button,input,select,textarea{cursor:none;font-family:inherit;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--ink2);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:72px;background:rgba(10,13,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-brand{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.35rem;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;align-items:center;gap:36px;list-style:none;}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--soft);transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
+.nav-links a:hover{color:var(--white);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-actions{display:flex;align-items:center;gap:14px;}
+.btn-ghost{height:40px;padding:0 20px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--soft);font-size:.85rem;font-weight:500;transition:border-color .2s,color .2s;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--white);}
+.cart-btn{position:relative;width:40px;height:40px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:1.1rem;transition:border-color .2s,color .2s;}
+.cart-btn:hover{border-color:var(--gold);color:var(--gold);}
+.cart-badge{position:absolute;top:-5px;right:-5px;width:17px;height:17px;background:var(--ember);border-radius:50%;font-size:.6rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);}
+
+/* ── DASHBOARD LAYOUT ── */
+.dash-wrap{display:grid;grid-template-columns:260px 1fr;min-height:100vh;padding-top:72px;}
+
+/* ── SIDEBAR ── */
+.dash-sidebar{
+  background:var(--ink2);border-right:1px solid var(--border);
+  padding:32px 0;
+  position:sticky;top:72px;height:calc(100vh - 72px);
+  overflow-y:auto;
+}
+
+/* user card */
+.user-card{padding:0 24px 28px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.user-avatar-wrap{position:relative;width:fit-content;margin-bottom:14px;}
+.user-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--ember));display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.5rem;font-weight:700;color:var(--ink);border:3px solid var(--ink2);}
+.avatar-online{position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:var(--jade);border-radius:50%;border:2.5px solid var(--ink2);}
+.user-name{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--white);margin-bottom:2px;}
+.user-email{font-size:.78rem;color:var(--muted);margin-bottom:10px;}
+.user-tier{display:inline-flex;align-items:center;gap:5px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.3);border-radius:100px;padding:3px 10px;font-size:.7rem;font-weight:700;color:var(--gold);letter-spacing:.08em;}
+
+/* nav items */
+.nav-section-label{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:8px 24px;margin-top:8px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;font-size:.88rem;font-weight:500;color:var(--soft);transition:background .15s,color .15s;position:relative;}
+.nav-item:hover{background:var(--ink3);color:var(--white);}
+.nav-item.active{background:rgba(240,165,0,.08);color:var(--gold);}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);border-radius:0 3px 3px 0;}
+.nav-icon{font-size:1.1rem;width:22px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;min-width:20px;height:20px;background:var(--ember);border-radius:100px;font-size:.65rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+.nav-badge.gold{background:var(--gold);color:var(--ink);}
+
+.sidebar-bottom{padding:24px;margin-top:auto;border-top:1px solid var(--border);}
+.logout-btn{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted);transition:color .2s;background:none;border:none;padding:0;width:100%;}
+.logout-btn:hover{color:var(--ember);}
+
+/* ── MAIN CONTENT ── */
+.dash-main{padding:40px 48px;overflow-y:auto;}
+
+/* section heading */
+.section-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px;}
+.section-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.section-title{font-family:'Clash Display',sans-serif;font-size:clamp(1.5rem,2.5vw,2rem);font-weight:700;color:var(--white);letter-spacing:-.02em;}
+.section-sub{font-size:.88rem;color:var(--muted);margin-top:4px;}
+
+/* ── VIEWS ── */
+.view{display:none;animation:fadeUp .35s ease both;}
+.view.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── OVERVIEW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.stat-card{background:var(--ink2);border:1px solid var(--border);border-radius:16px;padding:22px;transition:border-color .2s,transform .2s;position:relative;overflow:hidden;}
+.stat-card:hover{border-color:rgba(240,165,0,.3);transform:translateY(-2px);}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:2px;opacity:0;transition:opacity .2s;}
+.stat-card:hover::after{opacity:1;}
+.sc-jade::after{background:var(--jade);}
+.sc-gold::after{background:var(--gold);}
+.sc-sky::after{background:var(--sky);}
+.sc-ember::after{background:var(--ember);}
+.stat-icon{font-size:1.6rem;margin-bottom:12px;}
+.stat-num{font-family:'Clash Display',sans-serif;font-size:1.9rem;font-weight:700;color:var(--white);line-height:1;margin-bottom:4px;}
+.stat-label{font-size:.78rem;color:var(--muted);}
+.stat-delta{font-size:.72rem;font-weight:600;margin-top:6px;}
+.delta-up{color:var(--jade);}
+.delta-down{color:var(--ember);}
+
+/* recent orders mini */
+.recent-orders{background:var(--ink2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:24px;}
+.ro-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ro-title{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--white);}
+.ro-link{font-size:.8rem;color:var(--gold);border-bottom:1px solid rgba(240,165,0,.3);padding-bottom:1px;transition:border-color .2s;}
+.ro-link:hover{border-color:var(--gold);}
+
+.ro-item{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);transition:background .15s;}
+.ro-item:last-child{border-bottom:none;}
+.ro-item:hover{background:var(--ink3);}
+.ro-img{width:52px;height:52px;border-radius:10px;background:var(--ink3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.ro-info{}
+.ro-name{font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:3px;}
+.ro-meta{font-size:.75rem;color:var(--muted);}
+.ro-right{text-align:right;}
+.ro-price{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--gold);}
+.ro-status{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:100px;margin-top:5px;display:inline-block;}
+.status-delivered{background:rgba(0,191,165,.12);color:var(--jade);border:1px solid rgba(0,191,165,.3);}
+.status-transit{background:rgba(26,143,209,.12);color:var(--sky);border:1px solid rgba(26,143,209,.3);}
+.status-processing{background:rgba(240,165,0,.12);color:var(--gold);border:1px solid rgba(240,165,0,.3);}
+.status-preorder{background:rgba(232,75,26,.12);color:var(--ember);border:1px solid rgba(232,75,26,.3);}
+.status-confirmed{background:rgba(0,191,165,.08);color:var(--jade);border:1px solid rgba(0,191,165,.2);}
+
+/* active shipment card */
+.shipment-card{background:var(--ink2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:24px;}
+.sc-top{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.sc-ref{font-size:.75rem;color:var(--muted);}
+.sc-ref strong{color:var(--white);}
+.sc-eta{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;color:var(--jade);}
+.sc-track{padding:28px 24px;}
+.track-steps{display:flex;align-items:flex-start;justify-content:space-between;position:relative;}
+.track-steps::before{content:'';position:absolute;top:18px;left:18px;right:18px;height:2px;background:var(--border);z-index:0;}
+.track-progress{position:absolute;top:18px;left:18px;height:2px;background:linear-gradient(90deg,var(--jade),var(--gold));z-index:1;transition:width .8s ease;}
+.ts{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;z-index:2;flex:1;}
+.ts-dot{width:36px;height:36px;border-radius:50%;border:2.5px solid var(--border);background:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all .3s;}
+.ts.done .ts-dot{background:rgba(0,191,165,.15);border-color:var(--jade);}
+.ts.active .ts-dot{background:rgba(240,165,0,.15);border-color:var(--gold);box-shadow:0 0 0 6px rgba(240,165,0,.1);animation:trackPulse 2s ease infinite;}
+@keyframes trackPulse{0%,100%{box-shadow:0 0 0 4px rgba(240,165,0,.1);}50%{box-shadow:0 0 0 10px rgba(240,165,0,0);}}
+.ts-label{font-size:.72rem;font-weight:600;color:var(--muted);text-align:center;line-height:1.4;max-width:70px;}
+.ts.done .ts-label{color:var(--jade);}
+.ts.active .ts-label{color:var(--gold);}
+
+/* ── ORDERS VIEW ── */
+.orders-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.of-btn{height:34px;padding:0 16px;border-radius:100px;font-size:.82rem;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--soft);transition:background .15s,border-color .15s,color .15s;}
+.of-btn:hover{border-color:var(--gold);color:var(--white);}
+.of-btn.active{background:var(--gold);border-color:var(--gold);color:var(--ink);}
+
+.order-card{background:var(--ink2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px;transition:border-color .2s;}
+.order-card:hover{border-color:rgba(240,165,0,.3);}
+.oc-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.oc-ref{font-family:'Clash Display',sans-serif;font-size:.85rem;font-weight:700;color:var(--white);}
+.oc-date{font-size:.75rem;color:var(--muted);}
+.oc-body{padding:16px 24px;}
+.oc-items{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+.oc-item{display:flex;align-items:center;gap:14px;}
+.oc-img{width:48px;height:48px;border-radius:9px;background:var(--ink3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.oc-name{font-size:.87rem;font-weight:500;color:var(--white);flex:1;}
+.oc-qty{font-size:.75rem;color:var(--muted);}
+.oc-itemprice{font-size:.87rem;font-weight:600;color:var(--gold);white-space:nowrap;}
+.oc-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:16px;border-top:1px solid var(--border);}
+.oc-total{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--white);}
+.oc-total span{color:var(--gold);}
+.oc-actions{display:flex;gap:8px;}
+.oc-btn{height:34px;padding:0 16px;border-radius:8px;font-size:.78rem;font-weight:600;transition:background .15s,border-color .15s,color .15s;}
+.oc-btn-outline{background:transparent;border:1px solid var(--border);color:var(--soft);}
+.oc-btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.oc-btn-filled{background:var(--gold);border:none;color:var(--ink);}
+.oc-btn-filled:hover{background:var(--gold2);}
+.oc-btn-danger{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.oc-btn-danger:hover{border-color:var(--ember);color:var(--ember);}
+
+/* ── TRACKING VIEW ── */
+.tracking-search{display:flex;gap:10px;margin-bottom:32px;}
+.track-input{flex:1;height:48px;padding:0 18px;background:var(--ink2);border:1.5px solid var(--border);border-radius:12px;color:var(--body);font-size:.92rem;outline:none;transition:border-color .2s,box-shadow .2s;}
+.track-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,165,0,.1);}
+.track-input::placeholder{color:var(--muted);}
+.track-btn{height:48px;padding:0 28px;background:var(--gold);border:none;border-radius:12px;color:var(--ink);font-size:.9rem;font-weight:800;transition:background .15s,transform .15s;}
+.track-btn:hover{background:var(--gold2);transform:translateY(-1px);}
+
+.track-detail-card{background:var(--ink2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:20px;}
+.tdc-header{padding:22px 28px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.tdc-ref-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.tdc-ref{font-family:'Clash Display',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);}
+.tdc-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.tdc-chip{display:flex;align-items:center;gap:6px;font-size:.76rem;font-weight:600;padding:4px 12px;border-radius:100px;border:1px solid;}
+.chip-jade{color:var(--jade);border-color:rgba(0,191,165,.3);background:rgba(0,191,165,.08);}
+.chip-sky{color:var(--sky);border-color:rgba(26,143,209,.3);background:rgba(26,143,209,.08);}
+.chip-gold{color:var(--gold);border-color:rgba(240,165,0,.3);background:rgba(240,165,0,.08);}
+
+.tdc-track{padding:32px 28px;}
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:grid;grid-template-columns:48px 1fr;gap:16px;padding-bottom:28px;position:relative;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{content:'';position:absolute;left:23px;top:48px;bottom:0;width:2px;background:var(--border);}
+.tl-item:last-child::before{display:none;}
+.tl-item.done::before{background:var(--jade);}
+.tl-item.active::before{background:linear-gradient(180deg,var(--gold),var(--border));}
+.tl-dot{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;position:relative;z-index:1;transition:all .3s;}
+.tl-item.done .tl-dot{background:rgba(0,191,165,.12);border-color:var(--jade);}
+.tl-item.active .tl-dot{background:rgba(240,165,0,.12);border-color:var(--gold);animation:trackPulse 2s ease infinite;}
+.tl-body{padding-top:10px;}
+.tl-title{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:600;color:var(--white);margin-bottom:3px;}
+.tl-item.done .tl-title{color:var(--jade);}
+.tl-item.active .tl-title{color:var(--gold);}
+.tl-sub{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.tl-time{font-size:.72rem;color:var(--border);margin-top:4px;}
+.tl-item.done .tl-time,.tl-item.active .tl-time{color:var(--muted);}
+
+/* ── WISHLIST VIEW ── */
+.wishlist-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.wl-card{background:var(--ink2);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .2s,transform .2s;position:relative;}
+.wl-card:hover{border-color:rgba(240,165,0,.4);transform:translateY(-3px);}
+.wl-img{aspect-ratio:1;background:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;}
+.wl-remove{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(10,13,15,.8);border:1px solid var(--border);color:var(--ember);font-size:.8rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
+.wl-card:hover .wl-remove{opacity:1;}
+.wl-body{padding:14px;}
+.wl-cat{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.wl-name{font-family:'Clash Display',sans-serif;font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:10px;line-height:1.3;}
+.wl-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.wl-price{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gold);}
+.wl-btn{height:32px;padding:0 14px;background:var(--gold);border:none;border-radius:7px;color:var(--ink);font-size:.75rem;font-weight:700;transition:background .15s;}
+.wl-btn:hover{background:var(--gold2);}
+.wl-badge{position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:100px;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+
+/* ── PROFILE VIEW ── */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.profile-card{background:var(--ink2);border:1px solid var(--border);border-radius:18px;padding:28px;transition:border-color .2s;}
+.profile-card:hover{border-color:rgba(240,165,0,.2);}
+.pc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.pc-title{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--white);}
+.pc-edit{background:none;border:none;color:var(--gold);font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:4px;padding:0;transition:opacity .2s;}
+.pc-edit:hover{opacity:.7;}
+
+.profile-avatar-row{display:flex;align-items:center;gap:18px;margin-bottom:22px;}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--ember));display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.8rem;font-weight:700;color:var(--ink);flex-shrink:0;}
+.avatar-upload{font-size:.78rem;color:var(--gold);margin-top:4px;display:block;}
+
+.pfield{margin-bottom:16px;}
+.pfield:last-child{margin-bottom:0;}
+.pfield-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.pfield-val{font-size:.9rem;color:var(--body);}
+.pfield-input{width:100%;height:40px;padding:0 12px;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--body);font-size:.88rem;outline:none;transition:border-color .2s;display:none;}
+.pfield-input:focus{border-color:var(--gold);}
+.edit-mode .pfield-val{display:none;}
+.edit-mode .pfield-input{display:block;}
+
+.notif-list{display:flex;flex-direction:column;gap:10px;}
+.notif-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.notif-item:last-child{border-bottom:none;}
+.notif-info{}
+.notif-title{font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:2px;}
+.notif-sub{font-size:.75rem;color:var(--muted);}
+.toggle{width:44px;height:24px;border-radius:100px;background:var(--border);border:none;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--gold);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.toggle.on::after{transform:translateX(20px);}
+
+.address-list{display:flex;flex-direction:column;gap:10px;}
+.addr-item{background:var(--ink3);border:1.5px solid var(--border);border-radius:12px;padding:16px;transition:border-color .2s;}
+.addr-item:hover{border-color:rgba(240,165,0,.3);}
+.addr-item.default{border-color:rgba(240,165,0,.4);}
+.addr-default-badge{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.addr-name{font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:3px;}
+.addr-text{font-size:.82rem;color:var(--muted);line-height:1.5;}
+.addr-actions{display:flex;gap:8px;margin-top:10px;}
+.addr-btn{height:28px;padding:0 12px;border-radius:6px;font-size:.72rem;font-weight:600;background:transparent;border:1px solid var(--border);color:var(--muted);transition:border-color .15s,color .15s;}
+.addr-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.loyalty-card{background:linear-gradient(135deg,rgba(240,165,0,.12) 0%,rgba(232,75,26,.08) 100%);border:1px solid rgba(240,165,0,.25);border-radius:16px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
+.loyalty-card::before{content:'⬡';position:absolute;right:-10px;top:-10px;font-size:8rem;color:rgba(240,165,0,.06);line-height:1;}
+.lc-tier{font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.lc-points{font-family:'Clash Display',sans-serif;font-size:2.4rem;font-weight:700;color:var(--white);line-height:1;margin-bottom:6px;}
+.lc-sub{font-size:.8rem;color:var(--muted);margin-bottom:16px;}
+.lc-bar-bg{height:6px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:8px;}
+.lc-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--ember));width:62%;}
+.lc-bar-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);}
+.lc-bar-label span{color:var(--gold);}
+
+/* ── NOTIFICATIONS PANEL ── */
+.notif-panel{background:var(--ink2);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.np-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.np-title{font-family:'Clash Display',sans-serif;font-size:.92rem;font-weight:700;color:var(--white);}
+.mark-read{background:none;border:none;color:var(--gold);font-size:.78rem;font-weight:600;padding:0;transition:opacity .2s;}
+.mark-read:hover{opacity:.7;}
+.notif-feed{max-height:320px;overflow-y:auto;}
+.nf-item{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:flex-start;transition:background .15s;}
+.nf-item:last-child{border-bottom:none;}
+.nf-item:hover{background:var(--ink3);}
+.nf-item.unread{background:rgba(240,165,0,.04);}
+.nf-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:6px;}
+.nf-dot.read{background:transparent;border:1px solid var(--border);}
+.nf-icon{font-size:1.3rem;flex-shrink:0;}
+.nf-body{}
+.nf-text{font-size:.85rem;color:var(--body);line-height:1.5;margin-bottom:3px;}
+.nf-text strong{color:var(--white);}
+.nf-time{font-size:.72rem;color:var(--muted);}
+
+@media(max-width:1100px){.dash-wrap{grid-template-columns:1fr;}.dash-sidebar{position:static;height:auto;display:flex;flex-direction:row;flex-wrap:wrap;gap:0;padding:16px 0;border-right:none;border-bottom:1px solid var(--border);}.user-card{padding:0 20px 0;border-bottom:none;display:flex;align-items:center;gap:14px;margin-bottom:0;}.nav-section-label{display:none;}.nav-item{padding:10px 18px;font-size:.82rem;}.dash-main{padding:28px 24px;}.stats-row{grid-template-columns:repeat(2,1fr);}.wishlist-grid{grid-template-columns:repeat(2,1fr);}.profile-grid{grid-template-columns:1fr;}}
+@media(max-width:680px){nav{padding:0 20px;}.nav-links{display:none;}.stats-row{grid-template-columns:1fr 1fr;}.wishlist-grid{grid-template-columns:1fr 1fr;}.track-steps{gap:0;}.ts-label{font-size:.65rem;max-width:54px;}.profile-grid{grid-template-columns:1fr;}.dash-main{padding:20px 16px;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}}
+</style>
+</head>
+<body>
+  <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <defs><linearGradient id="nlg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F0A500"/><stop offset="100%" stop-color="#E84B1A"/></linearGradient></defs>
+      <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="url(#nlg)" stroke-width="1.5"/>
+      <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="serif" font-weight="700" font-size="13" fill="#F0A500">A</text>
+    </svg>
+    <span class="nav-brand">ADEY</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="adey-homepage.html">Home</a></li>
+    <li><a href="adey-shop.html">Shop</a></li>
+    <li><a href="#">In Transit</a></li>
+    <li><a href="#">Pre-Order</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="showView('notifications')">🔔</button>
+    <button class="cart-btn"><a href="adey-cart-checkout.html">🛒</a><span class="cart-badge" data-cart-count>2</span></button>
+  </div>
+</nav>
+
+<!-- DASHBOARD WRAP -->
+<div class="dash-wrap">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="dash-sidebar">
+    <div class="user-card">
+      <div class="user-avatar-wrap">
+        <div class="user-avatar">EO</div>
+        <div class="avatar-online"></div>
+      </div>
+      <div>
+        <div class="user-name">Emeka Okafor</div>
+        <div class="user-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb9e969e909abb9c969a9297d5989496">[email&#160;protected]</a></div>
+        <div class="user-tier">⭐ Gold Member</div>
+      </div>
+    </div>
+
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="showView('overview',this)"><span class="nav-icon">🏠</span> Overview</div>
+    <div class="nav-item" onclick="showView('orders',this)"><span class="nav-icon">📦</span> My Orders <span class="nav-badge">4</span></div>
+    <div class="nav-item" onclick="showView('tracking',this)"><span class="nav-icon">🚢</span> Track Shipment</div>
+    <div class="nav-item" onclick="showView('preorders',this)"><span class="nav-icon">⏳</span> Pre-Orders <span class="nav-badge gold">2</span></div>
+    <div class="nav-item" onclick="showView('wishlist',this)"><span class="nav-icon">♡</span> Wishlist <span class="nav-badge">5</span></div>
+
+    <div class="nav-section-label">Account</div>
+    <div class="nav-item" onclick="showView('profile',this)"><span class="nav-icon">👤</span> Profile</div>
+    <div class="nav-item" onclick="showView('notifications',this)"><span class="nav-icon">🔔</span> Notifications <span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="showView('addresses',this)"><span class="nav-icon">📍</span> Addresses</div>
+    <div class="nav-item" onclick="showView('security',this)"><span class="nav-icon">🔒</span> Security</div>
+
+    <div class="sidebar-bottom">
+      <button class="logout-btn">↩ Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="dash-main">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="view active" id="view-overview">
+      <div class="section-head">
+        <div>
+          <div class="section-eyebrow">Welcome Back</div>
+          <div class="section-title">Good afternoon, Emeka 👋</div>
+          <div class="section-sub">Here's everything happening with your orders today.</div>
+        </div>
+        <a href="adey-shop.html" style="height:42px;padding:0 22px;background:var(--gold);border-radius:10px;color:var(--ink);font-size:.85rem;font-weight:800;display:flex;align-items:center;gap:7px;transition:background .2s;">🛍️ Shop Now</a>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card sc-jade">
+          <div class="stat-icon">📦</div>
+          <div class="stat-num">12</div>
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-delta delta-up">↑ 3 this month</div>
+        </div>
+        <div class="stat-card sc-gold">
+          <div class="stat-icon">🚢</div>
+          <div class="stat-num">2</div>
+          <div class="stat-label">In Transit</div>
+          <div class="stat-delta delta-up">ETA in 3–5 days</div>
+        </div>
+        <div class="stat-card sc-sky">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-num">1,240</div>
+          <div class="stat-label">Loyalty Points</div>
+          <div class="stat-delta delta-up">↑ 240 this month</div>
+        </div>
+        <div class="stat-card sc-ember">
+          <div class="stat-icon">💰</div>
+          <div class="stat-num">₦312k</div>
+          <div class="stat-label">Total Saved</div>
+          <div class="stat-delta delta-up">vs. retail prices</div>
+        </div>
+      </div>
+
+      <!-- Active shipment -->
+      <div class="shipment-card">
+        <div class="sc-top">
+          <div>
+            <div class="sc-ref">Order <strong>#ADE-20250312-7841</strong> · Pro Wireless Earbuds + 2 more</div>
+          </div>
+          <div class="sc-eta">🟢 ETA: Tomorrow, Mar 18</div>
+        </div>
+        <div class="sc-track">
+          <div class="track-steps">
+            <div class="track-progress" id="trackProgress" style="width:62%"></div>
+            <div class="ts done"><div class="ts-dot">✅</div><div class="ts-label">Ordered in China</div></div>
+            <div class="ts done"><div class="ts-dot">📦</div><div class="ts-label">Quality Checked</div></div>
+            <div class="ts done"><div class="ts-dot">🚢</div><div class="ts-label">Departed Port</div></div>
+            <div class="ts active"><div class="ts-dot">🛃</div><div class="ts-label">Customs Clearance</div></div>
+            <div class="ts"><div class="ts-dot">🚚</div><div class="ts-label">Out for Delivery</div></div>
+            <div class="ts"><div class="ts-dot">🏠</div><div class="ts-label">Delivered</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent orders -->
+      <div class="recent-orders">
+        <div class="ro-header">
+          <div class="ro-title">Recent Orders</div>
+          <a href="#" class="ro-link" onclick="showView('orders',null)">View All →</a>
+        </div>
+        <div class="ro-item"><div class="ro-img">🎧</div><div class="ro-info"><div class="ro-name">Pro Wireless Earbuds ANC</div><div class="ro-meta">Mar 12 · #ADE-20250312-7841</div></div><div class="ro-right"><div class="ro-price">₦28,500</div><div class="ro-status status-transit">In Transit</div></div></div>
+        <div class="ro-item"><div class="ro-img">📱</div><div class="ro-info"><div class="ro-name">Xiaomi Redmi 13C 128GB</div><div class="ro-meta">Feb 28 · #ADE-20250228-5512</div></div><div class="ro-right"><div class="ro-price">₦92,000</div><div class="ro-status status-delivered">Delivered</div></div></div>
+        <div class="ro-item"><div class="ro-img">⌚</div><div class="ro-info"><div class="ro-name">Smart Watch Ultra</div><div class="ro-meta">Mar 14 · Pre-order Deposit Paid</div></div><div class="ro-right"><div class="ro-price">₦11,400</div><div class="ro-status status-preorder">Pre-Order</div></div></div>
+        <div class="ro-item"><div class="ro-img">🔋</div><div class="ro-info"><div class="ro-name">Power Bank 65W 20,000mAh</div><div class="ro-meta">Feb 15 · #ADE-20250215-3304</div></div><div class="ro-right"><div class="ro-price">₦22,000</div><div class="ro-status status-delivered">Delivered</div></div></div>
+      </div>
+    </div>
+
+    <!-- ── ORDERS ── -->
+    <div class="view" id="view-orders">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Purchase History</div><div class="section-title">My Orders</div></div>
+      </div>
+      <div class="orders-filters">
+        <button class="of-btn active" onclick="setOFilter(this)">All (12)</button>
+        <button class="of-btn" onclick="setOFilter(this)">In Transit (2)</button>
+        <button class="of-btn" onclick="setOFilter(this)">Pre-Order (2)</button>
+        <button class="of-btn" onclick="setOFilter(this)">Delivered (8)</button>
+      </div>
+
+      <div class="order-card">
+        <div class="oc-header">
+          <div><div class="oc-ref">#ADE-20250317-9841</div><div class="oc-date">March 17, 2025</div></div>
+          <span class="ro-status status-processing">Processing</span>
+        </div>
+        <div class="oc-body">
+          <div class="oc-items">
+            <div class="oc-item"><div class="oc-img">🎧</div><div class="oc-name">Pro Wireless Earbuds ANC Noise Cancelling<div class="oc-qty">Qty: 1 · Black · BT 5.3</div></div><div class="oc-itemprice">₦28,500</div></div>
+            <div class="oc-item"><div class="oc-img">📱</div><div class="oc-name">Xiaomi Redmi 13C 128GB<div class="oc-qty">Qty: 1 · Midnight Blue</div></div><div class="oc-itemprice">₦92,000</div></div>
+          </div>
+          <div class="oc-footer">
+            <div class="oc-total">Total: <span>₦122,000</span></div>
+            <div class="oc-actions">
+              <button class="oc-btn oc-btn-outline" onclick="showView('tracking',null)">Track Order</button>
+              <button class="oc-btn oc-btn-danger">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-card">
+        <div class="oc-header">
+          <div><div class="oc-ref">#ADE-20250312-7841</div><div class="oc-date">March 12, 2025</div></div>
+          <span class="ro-status status-transit">In Transit</span>
+        </div>
+        <div class="oc-body">
+          <div class="oc-items">
+            <div class="oc-item"><div class="oc-img">💡</div><div class="oc-name">RGB LED Strip 10m App-Controlled<div class="oc-qty">Qty: 2 · Multi-colour</div></div><div class="oc-itemprice">₦28,400</div></div>
+          </div>
+          <div class="oc-footer">
+            <div class="oc-total">Total: <span>₦29,900</span></div>
+            <div class="oc-actions">
+              <button class="oc-btn oc-btn-outline" onclick="showView('tracking',null)">Track</button>
+              <button class="oc-btn oc-btn-outline">Invoice</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-card">
+        <div class="oc-header">
+          <div><div class="oc-ref">#ADE-20250228-5512</div><div class="oc-date">February 28, 2025</div></div>
+          <span class="ro-status status-delivered">Delivered</span>
+        </div>
+        <div class="oc-body">
+          <div class="oc-items">
+            <div class="oc-item"><div class="oc-img">📱</div><div class="oc-name">Xiaomi Redmi 13C 128GB Dual SIM<div class="oc-qty">Qty: 1 · Midnight Blue</div></div><div class="oc-itemprice">₦92,000</div></div>
+          </div>
+          <div class="oc-footer">
+            <div class="oc-total">Total: <span>₦93,500</span></div>
+            <div class="oc-actions">
+              <button class="oc-btn oc-btn-filled" onclick="window.location.href='adey-shop.html'">Reorder</button>
+              <button class="oc-btn oc-btn-outline">Review</button>
+              <button class="oc-btn oc-btn-outline">Invoice</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-card">
+        <div class="oc-header">
+          <div><div class="oc-ref">#ADE-20250215-3304</div><div class="oc-date">February 15, 2025</div></div>
+          <span class="ro-status status-delivered">Delivered</span>
+        </div>
+        <div class="oc-body">
+          <div class="oc-items">
+            <div class="oc-item"><div class="oc-img">🔋</div><div class="oc-name">Power Bank 65W 20,000mAh<div class="oc-qty">Qty: 1 · Black</div></div><div class="oc-itemprice">₦22,000</div></div>
+          </div>
+          <div class="oc-footer">
+            <div class="oc-total">Total: <span>₦23,500</span></div>
+            <div class="oc-actions">
+              <button class="oc-btn oc-btn-filled" onclick="window.location.href='adey-shop.html'">Reorder</button>
+              <button class="oc-btn oc-btn-outline">Invoice</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRACKING ── -->
+    <div class="view" id="view-tracking">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Live Updates</div><div class="section-title">Track Shipment</div></div>
+      </div>
+      <div class="tracking-search">
+        <input class="track-input" type="text" placeholder="Enter order reference e.g. #ADE-20250317-9841" id="trackInputField" value="#ADE-20250312-7841"/>
+        <button class="track-btn" onclick="doTrack()">Track →</button>
+      </div>
+
+      <div class="track-detail-card" id="trackDetailCard">
+        <div class="tdc-header">
+          <div>
+            <div class="tdc-ref-label">Order Reference</div>
+            <div class="tdc-ref">#ADE-20250312-7841</div>
+            <div class="tdc-chips">
+              <span class="tdc-chip chip-sky">🚢 In Transit</span>
+              <span class="tdc-chip chip-gold">⏱ ETA: Mar 18</span>
+              <span class="tdc-chip chip-jade">2 items</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;">Origin → Destination</div>
+            <div style="font-size:.9rem;font-weight:600;color:var(--white);">Guangzhou 🇨🇳 → Lagos 🇳🇬</div>
+          </div>
+        </div>
+        <div class="tdc-track">
+          <div class="timeline">
+            <div class="tl-item done">
+              <div class="tl-dot">✅</div>
+              <div class="tl-body">
+                <div class="tl-title">Order Placed & Confirmed</div>
+                <div class="tl-sub">Supplier confirmed stock. Payment verified by Paystack.</div>
+                <div class="tl-time">Mar 8, 2025 · 10:42 AM</div>
+              </div>
+            </div>
+            <div class="tl-item done">
+              <div class="tl-dot">🏭</div>
+              <div class="tl-body">
+                <div class="tl-title">Quality Checked & Packed</div>
+                <div class="tl-sub">All 2 items inspected and packed at Guangzhou warehouse.</div>
+                <div class="tl-time">Mar 10, 2025 · 2:15 PM</div>
+              </div>
+            </div>
+            <div class="tl-item done">
+              <div class="tl-dot">🚢</div>
+              <div class="tl-body">
+                <div class="tl-title">Departed Shanghai Port</div>
+                <div class="tl-sub">Vessel: COSCO Guangzhou. Manifest confirmed.</div>
+                <div class="tl-time">Mar 12, 2025 · 8:00 AM</div>
+              </div>
+            </div>
+            <div class="tl-item active">
+              <div class="tl-dot">🛃</div>
+              <div class="tl-body">
+                <div class="tl-title">Customs Clearance — Apapa Port, Lagos</div>
+                <div class="tl-sub">Vessel docked. Goods under NCS inspection. Clearance in progress.</div>
+                <div class="tl-time">Mar 17, 2025 · 6:30 AM (Today)</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot">🚚</div>
+              <div class="tl-body">
+                <div class="tl-title">Out for Delivery</div>
+                <div class="tl-sub">Rider assigned. You'll receive SMS with contact details.</div>
+                <div class="tl-time">Expected: Mar 18, 2025</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot">🏠</div>
+              <div class="tl-body">
+                <div class="tl-title">Delivered to You</div>
+                <div class="tl-sub">Awaiting delivery completion.</div>
+                <div class="tl-time">Expected: Mar 18, 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PRE-ORDERS ── -->
+    <div class="view" id="view-preorders">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Reserved Items</div><div class="section-title">My Pre-Orders</div></div>
+        <a href="adey-shop.html" style="height:40px;padding:0 20px;background:transparent;border:1.5px solid var(--gold);border-radius:10px;color:var(--gold);font-size:.84rem;font-weight:700;display:flex;align-items:center;gap:6px;transition:background .2s,color .2s;">Browse More →</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="order-card">
+          <div class="oc-header">
+            <div><div class="oc-ref">⌚ Smart Watch Ultra Fitness Monitor</div><div class="oc-date">Reserved Mar 14, 2025</div></div>
+            <span class="ro-status status-transit">🚢 ETA Mar 22</span>
+          </div>
+          <div class="oc-body">
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+              <div style="display:flex;justify-content:space-between;font-size:.85rem;"><span style="color:var(--muted);">Total Price</span><span style="color:var(--white);font-weight:600;">₦38,000</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.85rem;"><span style="color:var(--muted);">Deposit Paid</span><span style="color:var(--jade);font-weight:600;">₦11,400 ✓</span></div>
+              <div style="height:1px;background:var(--border);"></div>
+              <div style="display:flex;justify-content:space-between;font-size:.88rem;"><span style="color:var(--muted);">Balance Due on Arrival</span><span style="font-family:'Clash Display',sans-serif;color:var(--gold);font-weight:700;font-size:1rem;">₦26,600</span></div>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:6px;"><div style="width:30%;height:100%;background:linear-gradient(90deg,var(--gold),var(--ember));border-radius:6px;"></div></div>
+            <div style="font-size:.75rem;color:var(--muted);">Shipment 30% cleared · Arrives in ~5 days</div>
+            <div class="oc-footer" style="margin-top:16px;">
+              <div></div>
+              <div class="oc-actions">
+                <button class="oc-btn oc-btn-outline" onclick="showView('tracking',null)">Track</button>
+                <button class="oc-btn oc-btn-filled">Pay Balance Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="order-card">
+          <div class="oc-header">
+            <div><div class="oc-ref">🖥️ IPS 27" Gaming Monitor 144Hz</div><div class="oc-date">Reserved Mar 10, 2025</div></div>
+            <span class="ro-status status-transit">🚢 ETA Mar 25</span>
+          </div>
+          <div class="oc-body">
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+              <div style="display:flex;justify-content:space-between;font-size:.85rem;"><span style="color:var(--muted);">Total Price</span><span style="color:var(--white);font-weight:600;">₦185,000</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.85rem;"><span style="color:var(--muted);">Deposit Paid</span><span style="color:var(--jade);font-weight:600;">₦55,500 ✓</span></div>
+              <div style="height:1px;background:var(--border);"></div>
+              <div style="display:flex;justify-content:space-between;font-size:.88rem;"><span style="color:var(--muted);">Balance Due on Arrival</span><span style="font-family:'Clash Display',sans-serif;color:var(--gold);font-weight:700;font-size:1rem;">₦129,500</span></div>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:6px;"><div style="width:15%;height:100%;background:linear-gradient(90deg,var(--sky),var(--jade));border-radius:6px;"></div></div>
+            <div style="font-size:.75rem;color:var(--muted);">Shipment 15% cleared · Still in transit from China</div>
+            <div class="oc-footer" style="margin-top:16px;">
+              <div></div>
+              <div class="oc-actions">
+                <button class="oc-btn oc-btn-outline" onclick="showView('tracking',null)">Track</button>
+                <button class="oc-btn oc-btn-outline">Pay Balance Early</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WISHLIST ── -->
+    <div class="view" id="view-wishlist">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Saved Items</div><div class="section-title">My Wishlist</div></div>
+        <div style="font-size:.84rem;color:var(--muted);">5 items saved</div>
+      </div>
+      <div class="wishlist-grid">
+        <div class="wl-card">
+          <div class="wl-img">🎮<button class="wl-remove" onclick="removeWish(this)">✕</button><span class="wl-badge badge-hot" style="background:rgba(0,191,165,.18);color:var(--jade);border:1px solid rgba(0,191,165,.3);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">🔥 Hot</span></div>
+          <div class="wl-body"><div class="wl-cat">Gaming</div><div class="wl-name">Wireless Controller Xbox Compatible</div><div class="wl-footer"><span class="wl-price">₦32,500</span><button class="wl-btn" onclick="addFromWish(this)">Add to Cart</button></div></div>
+        </div>
+        <div class="wl-card">
+          <div class="wl-img">📷<button class="wl-remove" onclick="removeWish(this)">✕</button><span class="wl-badge" style="background:rgba(232,75,26,.18);color:var(--ember);border:1px solid rgba(232,75,26,.3);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:100px;">Sale</span></div>
+          <div class="wl-body"><div class="wl-cat">Photography</div><div class="wl-name">4K Action Camera Waterproof Kit</div><div class="wl-footer"><span class="wl-price">₦74,000</span><button class="wl-btn" onclick="addFromWish(this)">Add to Cart</button></div></div>
+        </div>
+        <div class="wl-card">
+          <div class="wl-img">🏋️<button class="wl-remove" onclick="removeWish(this)">✕</button></div>
+          <div class="wl-body"><div class="wl-cat">Fitness</div><div class="wl-name">Adjustable Dumbbell Set 5–25kg</div><div class="wl-footer"><span class="wl-price">₦118,000</span><button class="wl-btn" onclick="addFromWish(this)">Add to Cart</button></div></div>
+        </div>
+        <div class="wl-card">
+          <div class="wl-img">🖨️<button class="wl-remove" onclick="removeWish(this)">✕</button><span class="wl-badge badge-transit" style="background:rgba(26,143,209,.18);color:var(--sky);border:1px solid rgba(26,143,209,.3);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:100px;">In Transit</span></div>
+          <div class="wl-body"><div class="wl-cat">Office</div><div class="wl-name">Wireless All-in-One Printer</div><div class="wl-footer"><span class="wl-price">₦68,000</span><button class="wl-btn" style="background:var(--sky);color:#fff;" onclick="addFromWish(this)">Pre-Order</button></div></div>
+        </div>
+        <div class="wl-card">
+          <div class="wl-img">🛋️<button class="wl-remove" onclick="removeWish(this)">✕</button></div>
+          <div class="wl-body"><div class="wl-cat">Home</div><div class="wl-name">Ergonomic Office Chair Mesh</div><div class="wl-footer"><span class="wl-price">₦145,000</span><button class="wl-btn" onclick="addFromWish(this)">Add to Cart</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="view" id="view-profile">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Account Settings</div><div class="section-title">My Profile</div></div>
+      </div>
+
+      <!-- Loyalty card -->
+      <div class="loyalty-card">
+        <div class="lc-tier">⭐ Gold Member</div>
+        <div class="lc-points">1,240 pts</div>
+        <div class="lc-sub">760 points until Platinum tier — earn 1 point per ₦100 spent</div>
+        <div class="lc-bar-bg"><div class="lc-bar-fill"></div></div>
+        <div class="lc-bar-label"><span>1,240 pts</span><span>Platinum at 2,000 pts</span></div>
+      </div>
+
+      <div class="profile-grid">
+        <!-- Personal info -->
+        <div class="profile-card" id="personalCard">
+          <div class="pc-head">
+            <div class="pc-title">Personal Information</div>
+            <button class="pc-edit" onclick="toggleEdit('personalCard')">✏️ Edit</button>
+          </div>
+          <div class="profile-avatar-row">
+            <div class="profile-avatar">EO</div>
+            <div><div style="font-size:.88rem;font-weight:600;color:var(--white);">Emeka Okafor</div><span class="avatar-upload">Change photo</span></div>
+          </div>
+          <div class="pfield"><div class="pfield-label">First Name</div><div class="pfield-val">Emeka</div><input class="pfield-input" type="text" value="Emeka"/></div>
+          <div class="pfield"><div class="pfield-label">Last Name</div><div class="pfield-val">Okafor</div><input class="pfield-input" type="text" value="Okafor"/></div>
+          <div class="pfield"><div class="pfield-label">Phone</div><div class="pfield-val">0812 345 6789</div><input class="pfield-input" type="tel" value="0812 345 6789"/></div>
+          <div class="pfield"><div class="pfield-label">Email</div><div class="pfield-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7a2aaa2aca687a0aaa6aeabe9a4a8aa">[email&#160;protected]</a></div><input class="pfield-input" type="email" value="emeka@gmail.com"/></div>
+          <div id="personalSave" style="display:none;margin-top:18px;display:none;">
+            <button onclick="saveEdit('personalCard')" style="height:40px;padding:0 24px;background:var(--gold);border:none;border-radius:9px;color:var(--ink);font-size:.85rem;font-weight:700;">Save Changes</button>
+            <button onclick="cancelEdit('personalCard')" style="height:40px;padding:0 18px;background:transparent;border:none;color:var(--muted);font-size:.85rem;margin-left:8px;">Cancel</button>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="profile-card">
+          <div class="pc-head"><div class="pc-title">Notification Preferences</div></div>
+          <div class="notif-list">
+            <div class="notif-item"><div class="notif-info"><div class="notif-title">Order Updates</div><div class="notif-sub">Confirmation, dispatch, delivery</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="notif-item"><div class="notif-info"><div class="notif-title">Shipment Tracking</div><div class="notif-sub">Live updates on your orders in transit</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="notif-item"><div class="notif-info"><div class="notif-title">Pre-Order Arrivals</div><div class="notif-sub">When your reserved items clear customs</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="notif-item"><div class="notif-info"><div class="notif-title">New Arrivals</div><div class="notif-sub">Weekly email when new stock lands</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+            <div class="notif-item"><div class="notif-info"><div class="notif-title">Flash Deals</div><div class="notif-sub">Limited-time price drops on wishlisted items</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="notif-item"><div class="notif-info"><div class="notif-title">WhatsApp Updates</div><div class="notif-sub">Get updates directly on WhatsApp</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NOTIFICATIONS ── -->
+    <div class="view" id="view-notifications">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Inbox</div><div class="section-title">Notifications</div></div>
+      </div>
+      <div class="notif-panel">
+        <div class="np-header"><div class="np-title">Recent Notifications</div><button class="mark-read" onclick="markAllRead()">Mark all read</button></div>
+        <div class="notif-feed">
+          <div class="nf-item unread" id="nf1"><div class="nf-dot"></div><div class="nf-icon">🛃</div><div class="nf-body"><div class="nf-text"><strong>Customs Update:</strong> Your order #ADE-20250312-7841 is currently being cleared at Apapa Port. Expected delivery tomorrow.</div><div class="nf-time">Today · 9:14 AM</div></div></div>
+          <div class="nf-item unread" id="nf2"><div class="nf-dot"></div><div class="nf-icon">✅</div><div class="nf-body"><div class="nf-text"><strong>Order Confirmed:</strong> Your order #ADE-20250317-9841 (₦122,000) has been confirmed. Payment received via Paystack.</div><div class="nf-time">Today · 8:02 AM</div></div></div>
+          <div class="nf-item unread" id="nf3"><div class="nf-dot"></div><div class="nf-icon">🔥</div><div class="nf-body"><div class="nf-text"><strong>Flash Deal:</strong> Gaming Controller on your wishlist is now <strong>₦27,000</strong> (was ₦32,500). Offer ends in 4 hours.</div><div class="nf-time">Today · 7:30 AM</div></div></div>
+          <div class="nf-item" id="nf4"><div class="nf-dot read"></div><div class="nf-icon">🚢</div><div class="nf-body"><div class="nf-text"><strong>Shipment Update:</strong> Vessel COSCO Guangzhou carrying your items has docked at Apapa Port.</div><div class="nf-time">Yesterday · 6:45 PM</div></div></div>
+          <div class="nf-item" id="nf5"><div class="nf-dot read"></div><div class="nf-icon">⌚</div><div class="nf-body"><div class="nf-text"><strong>Pre-Order:</strong> Your Smart Watch Ultra deposit (₦11,400) was successfully processed. ETA: March 22.</div><div class="nf-time">Mar 14 · 2:11 PM</div></div></div>
+          <div class="nf-item" id="nf6"><div class="nf-dot read"></div><div class="nf-icon">📦</div><div class="nf-body"><div class="nf-text"><strong>Delivered:</strong> Your Xiaomi Redmi 13C 128GB has been delivered. Enjoy your purchase!</div><div class="nf-time">Mar 1 · 3:40 PM</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ADDRESSES ── -->
+    <div class="view" id="view-addresses">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Delivery Locations</div><div class="section-title">Saved Addresses</div></div>
+        <button onclick="alert('Add address form coming soon')" style="height:42px;padding:0 22px;background:transparent;border:1.5px solid var(--gold);border-radius:10px;color:var(--gold);font-size:.84rem;font-weight:700;transition:background .2s,color .2s;">+ Add Address</button>
+      </div>
+      <div class="profile-card" style="max-width:640px;">
+        <div class="address-list">
+          <div class="addr-item default">
+            <div class="addr-default-badge">⭐ Default Address</div>
+            <div class="addr-name">Emeka Okafor</div>
+            <div class="addr-text">14 Admiralty Way, Lekki Phase 1<br/>Lagos, Lagos State · Near Shoprite Lekki</div>
+            <div class="addr-actions">
+              <button class="addr-btn">Edit</button>
+              <button class="addr-btn">Set Default</button>
+            </div>
+          </div>
+          <div class="addr-item">
+            <div class="addr-name">Office — Emeka Okafor</div>
+            <div class="addr-text">Plot 4, Wole Ariyo Street, Lekki Phase 1<br/>Lagos, Lagos State · Victoria Island</div>
+            <div class="addr-actions">
+              <button class="addr-btn">Edit</button>
+              <button class="addr-btn">Set Default</button>
+              <button class="addr-btn" style="color:var(--ember);">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECURITY ── -->
+    <div class="view" id="view-security">
+      <div class="section-head">
+        <div><div class="section-eyebrow">Account Safety</div><div class="section-title">Security Settings</div></div>
+      </div>
+      <div class="profile-grid">
+        <div class="profile-card">
+          <div class="pc-head"><div class="pc-title">Change Password</div></div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="field" style="display:flex;flex-direction:column;gap:6px;">
+              <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Current Password</label>
+              <input type="password" placeholder="••••••••" style="height:42px;padding:0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--body);font-size:.9rem;outline:none;width:100%;"/>
+            </div>
+            <div class="field" style="display:flex;flex-direction:column;gap:6px;">
+              <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">New Password</label>
+              <input type="password" placeholder="Min 8 characters" style="height:42px;padding:0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--body);font-size:.9rem;outline:none;width:100%;"/>
+            </div>
+            <div class="field" style="display:flex;flex-direction:column;gap:6px;">
+              <label style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Confirm New Password</label>
+              <input type="password" placeholder="Re-enter new password" style="height:42px;padding:0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--body);font-size:.9rem;outline:none;width:100%;"/>
+            </div>
+            <button style="height:42px;background:var(--gold);border:none;border-radius:9px;color:var(--ink);font-size:.88rem;font-weight:800;margin-top:4px;transition:background .15s;">Update Password</button>
+          </div>
+        </div>
+        <div class="profile-card">
+          <div class="pc-head"><div class="pc-title">Two-Factor Authentication</div></div>
+          <div style="margin-bottom:20px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+              <div><div style="font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:2px;">SMS Verification</div><div style="font-size:.75rem;color:var(--muted);">Sent to 0812 *** 6789</div></div>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+              <div><div style="font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:2px;">Email Verification</div><div style="font-size:.75rem;color:var(--muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caafa7afa1ab8aada7aba3a6e4a9a5a7">[email&#160;protected]</a></div></div>
+              <button class="toggle" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+          <div style="background:rgba(0,191,165,.07);border:1px solid rgba(0,191,165,.2);border-radius:10px;padding:14px;font-size:.8rem;color:var(--jade);line-height:1.6;">
+            🔒 Your account is protected with Paystack-level encryption. ADEY never shares your payment data with third parties.
+          </div>
+          <div style="margin-top:20px;">
+            <div style="font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Active Sessions</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--ink3);border:1px solid var(--border);border-radius:9px;">
+                <div><div style="font-size:.85rem;font-weight:600;color:var(--white);">Chrome · Lagos, NG</div><div style="font-size:.72rem;color:var(--jade);">Current session</div></div>
+                <span style="font-size:.72rem;color:var(--muted);">Now</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--ink3);border:1px solid var(--border);border-radius:9px;">
+                <div><div style="font-size:.85rem;font-weight:600;color:var(--white);">Mobile Safari · Lagos, NG</div><div style="font-size:.72rem;color:var(--muted);">2 days ago</div></div>
+                <button style="font-size:.72rem;color:var(--ember);background:none;border:none;padding:0;">Revoke</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /dash-wrap -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* cursor */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-5+'px';cur.style.top=my-5+'px';});
+(function a(){rx+=(mx-rx-18)*.14;ry+=(my-ry-18)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('a,button,input,.nav-item,.order-card,.stat-card,.ro-item,.wl-card,.addr-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='scale(2)';ring.style.transform='scale(1.3)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';ring.style.transform='scale(1)';});
+});
+
+/* view switching */
+function showView(id, navEl){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if(navEl){
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    navEl.classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* order filter */
+function setOFilter(btn){
+  document.querySelectorAll('.of-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* tracking */
+function doTrack(){
+  const val=document.getElementById('trackInputField').value.trim();
+  if(val) document.querySelector('.tdc-ref').textContent=val;
+}
+
+/* wishlist remove */
+function removeWish(btn){
+  const card=btn.closest('.wl-card');
+  card.style.transition='opacity .3s,transform .3s';
+  card.style.opacity='0';card.style.transform='scale(.9)';
+  setTimeout(()=>card.remove(),300);
+}
+
+/* wishlist add to cart */
+function addFromWish(btn){
+  const o=btn.textContent;
+  btn.textContent='✓ Added';btn.style.background='#00BFA5';btn.style.color='#fff';
+  setTimeout(()=>{btn.textContent=o;btn.style.background='';btn.style.color='';},1800);
+}
+
+/* profile edit */
+function toggleEdit(cardId){
+  const card=document.getElementById(cardId);
+  card.classList.toggle('edit-mode');
+  const saveRow=card.querySelector('[id$="Save"]');
+  if(saveRow) saveRow.style.display=card.classList.contains('edit-mode')?'flex':'none';
+  card.querySelector('.pc-edit').textContent=card.classList.contains('edit-mode')?'✕ Cancel':'✏️ Edit';
+}
+function saveEdit(cardId){
+  const card=document.getElementById(cardId);
+  card.querySelectorAll('.pfield').forEach(f=>{
+    const inp=f.querySelector('.pfield-input');
+    const val=f.querySelector('.pfield-val');
+    if(inp&&val) val.textContent=inp.value;
+  });
+  card.classList.remove('edit-mode');
+  const saveRow=card.querySelector('[id$="Save"]');
+  if(saveRow) saveRow.style.display='none';
+  card.querySelector('.pc-edit').textContent='✏️ Edit';
+}
+function cancelEdit(cardId){
+  const ca

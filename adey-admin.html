@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADEY Admin — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--ink:#0A0D0F;--ink2:#141A1F;--ink3:#1C2530;--border:#222D38;--muted:#4A6072;--soft:#8AA0B0;--body:#C8D8E4;--white:#F0F6FA;--gold:#F0A500;--gold2:#FFCC55;--ember:#E84B1A;--jade:#00BFA5;--sky:#1A8FD1;--purple:#9B59D0;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--body);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden;cursor:none;}
+.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:transform .15s;mix-blend-mode:difference;}
+.cursor-ring{width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;}
+a{color:inherit;text-decoration:none;}
+button,input,select,textarea{cursor:none;font-family:inherit;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--ink2);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px;}
+
+/* ── TOP BAR ── */
+.topbar{position:fixed;top:0;left:260px;right:0;z-index:100;height:64px;background:rgba(10,13,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;}
+.tb-left{display:flex;align-items:center;gap:16px;}
+.tb-title{font-family:'Clash Display',sans-serif;font-size:1.05rem;font-weight:700;color:var(--white);}
+.tb-sub{font-size:.78rem;color:var(--muted);}
+.tb-right{display:flex;align-items:center;gap:12px;}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;padding:0 12px;height:36px;}
+.tb-search input{background:none;border:none;color:var(--body);font-size:.85rem;font-family:inherit;outline:none;width:200px;}
+.tb-search input::placeholder{color:var(--muted);}
+.tb-icon-btn{width:36px;height:36px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:1rem;transition:border-color .2s,color .2s;position:relative;}
+.tb-icon-btn:hover{border-color:var(--gold);color:var(--gold);}
+.tb-notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--ember);border-radius:50%;border:2px solid var(--ink3);}
+.tb-user{display:flex;align-items:center;gap:10px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;}
+.tb-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--ember));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:var(--ink);}
+.tb-name{font-size:.82rem;font-weight:600;color:var(--white);}
+.tb-role{font-size:.68rem;color:var(--gold);}
+
+/* ── SIDEBAR ── */
+.sidebar{position:fixed;top:0;left:0;width:260px;height:100vh;background:var(--ink2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:200;overflow-y:auto;}
+.sb-logo{padding:22px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.sb-logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--ember));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-weight:800;font-size:1rem;color:var(--ink);}
+.sb-brand{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.1rem;color:var(--white);}
+.sb-tagline{font-size:.65rem;color:var(--muted);}
+.sb-section{padding:18px 16px 4px;font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+.sb-item{display:flex;align-items:center;gap:12px;padding:10px 20px;font-size:.87rem;font-weight:500;color:var(--soft);transition:background .15s,color .15s;position:relative;border-radius:8px;margin:1px 8px;}
+.sb-item:hover{background:var(--ink3);color:var(--white);}
+.sb-item.active{background:rgba(240,165,0,.1);color:var(--gold);}
+.sb-item.active::before{content:'';position:absolute;left:-8px;top:0;bottom:0;width:3px;background:var(--gold);border-radius:0 3px 3px 0;}
+.sb-icon{font-size:1.1rem;width:20px;text-align:center;flex-shrink:0;}
+.sb-badge{margin-left:auto;min-width:20px;height:20px;border-radius:100px;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+.sb-badge-red{background:var(--ember);color:#fff;}
+.sb-badge-gold{background:var(--gold);color:var(--ink);}
+.sb-badge-sky{background:var(--sky);color:#fff;}
+.sb-bottom{margin-top:auto;padding:16px;border-top:1px solid var(--border);}
+.sb-env{display:flex;align-items:center;gap:8px;background:rgba(0,191,165,.08);border:1px solid rgba(0,191,165,.2);border-radius:8px;padding:10px 14px;font-size:.78rem;color:var(--jade);margin-bottom:12px;}
+.sb-env-dot{width:7px;height:7px;border-radius:50%;background:var(--jade);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.sb-logout{display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--muted);background:none;border:none;padding:0;width:100%;transition:color .2s;}
+.sb-logout:hover{color:var(--ember);}
+
+/* ── MAIN ── */
+.main{margin-left:260px;padding-top:64px;min-height:100vh;}
+.view{display:none;padding:36px 36px 80px;animation:fadeUp .3s ease both;}
+.view.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SECTION HEAD ── */
+.section-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;}
+.sh-left{}
+.sh-eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.sh-title{font-family:'Clash Display',sans-serif;font-size:clamp(1.5rem,2.5vw,2.1rem);font-weight:700;color:var(--white);letter-spacing:-.02em;}
+.sh-sub{font-size:.85rem;color:var(--muted);margin-top:4px;}
+.sh-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-primary{height:40px;padding:0 20px;background:var(--gold);border:none;border-radius:8px;color:var(--ink);font-size:.85rem;font-weight:700;display:flex;align-items:center;gap:7px;transition:background .15s,transform .12s;}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-1px);}
+.btn-outline{height:40px;padding:0 18px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--soft);font-size:.85rem;font-weight:600;transition:border-color .2s,color .2s;}
+.btn-outline:hover{border-color:var(--gold);color:var(--white);}
+.btn-danger{height:40px;padding:0 18px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:.82rem;font-weight:600;transition:border-color .2s,color .2s;}
+.btn-danger:hover{border-color:var(--ember);color:var(--ember);}
+
+/* ── STAT CARDS ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--ink2);border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;}
+.stat-card:hover{border-color:rgba(240,165,0,.3);transform:translateY(-2px);}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;border-radius:2px;opacity:0;transition:opacity .2s;}
+.stat-card:hover::after{opacity:1;}
+.sc-gold::after{background:var(--gold);}
+.sc-jade::after{background:var(--jade);}
+.sc-sky::after{background:var(--sky);}
+.sc-ember::after{background:var(--ember);}
+.sc-purple::after{background:var(--purple);}
+.stat-icon{font-size:1.8rem;margin-bottom:10px;}
+.stat-num{font-family:'Clash Display',sans-serif;font-size:2rem;font-weight:700;color:var(--white);line-height:1;margin-bottom:4px;}
+.stat-label{font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+.stat-delta{font-size:.72rem;font-weight:600;}
+.delta-up{color:var(--jade);}
+.delta-dn{color:var(--ember);}
+.stat-sparkline{position:absolute;bottom:0;right:0;width:80px;height:40px;opacity:.2;}
+
+/* ── PANEL ── */
+.panel{background:var(--ink2);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:20px;}
+.panel-head{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.panel-title{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--white);}
+.panel-actions{display:flex;gap:8px;align-items:center;}
+.panel-link{font-size:.78rem;color:var(--gold);border-bottom:1px solid rgba(240,165,0,.3);padding-bottom:1px;transition:border-color .2s;}
+.panel-link:hover{border-color:var(--gold);}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:12px 20px;text-align:left;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--ink3);}
+td{padding:13px 20px;font-size:.87rem;color:var(--body);vertical-align:middle;}
+.td-bold{font-weight:600;color:var(--white);}
+.td-mono{font-family:'Clash Display',sans-serif;font-weight:600;}
+.td-muted{color:var(--muted);}
+.td-gold{color:var(--gold);font-weight:600;}
+
+/* status badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.04em;white-space:nowrap;}
+.badge-jade{background:rgba(0,191,165,.12);color:var(--jade);border:1px solid rgba(0,191,165,.3);}
+.badge-sky{background:rgba(26,143,209,.12);color:var(--sky);border:1px solid rgba(26,143,209,.3);}
+.badge-gold{background:rgba(240,165,0,.12);color:var(--gold);border:1px solid rgba(240,165,0,.3);}
+.badge-ember{background:rgba(232,75,26,.12);color:var(--ember);border:1px solid rgba(232,75,26,.3);}
+.badge-muted{background:rgba(74,96,114,.12);color:var(--muted);border:1px solid rgba(74,96,114,.3);}
+.badge-purple{background:rgba(155,89,208,.12);color:var(--purple);border:1px solid rgba(155,89,208,.3);}
+
+/* row actions */
+.row-actions{display:flex;gap:6px;opacity:0;transition:opacity .15s;}
+tr:hover .row-actions{opacity:1;}
+.ra-btn{height:28px;padding:0 10px;border-radius:6px;font-size:.72rem;font-weight:600;background:transparent;border:1px solid var(--border);color:var(--muted);transition:border-color .15s,color .15s;}
+.ra-btn:hover{border-color:var(--gold);color:var(--gold);}
+.ra-btn-danger:hover{border-color:var(--ember);color:var(--ember);}
+
+/* ── GRID 2-COL ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.grid-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+
+/* top products */
+.top-prod-list{display:flex;flex-direction:column;gap:0;}
+.tp-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);transition:background .15s;}
+.tp-item:last-child{border-bottom:none;}
+.tp-item:hover{background:var(--ink3);}
+.tp-rank{font-family:'Clash Display',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);width:20px;flex-shrink:0;}
+.tp-img{width:44px;height:44px;border-radius:9px;background:var(--ink3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.tp-info{flex:1;}
+.tp-name{font-size:.86rem;font-weight:600;color:var(--white);margin-bottom:2px;}
+.tp-cat{font-size:.72rem;color:var(--muted);}
+.tp-revenue{text-align:right;}
+.tp-price{font-family:'Clash Display',sans-serif;font-size:.92rem;font-weight:700;color:var(--gold);}
+.tp-units{font-size:.72rem;color:var(--muted);}
+
+/* revenue chart bars */
+.chart-bars{padding:20px 20px 8px;display:flex;align-items:flex-end;gap:8px;height:120px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--gold),rgba(240,165,0,.4));transition:height .6s ease;min-height:4px;}
+.bar-label{font-size:.65rem;color:var(--muted);}
+.bar.active{background:linear-gradient(180deg,var(--gold2),var(--gold));}
+.chart-x{display:flex;gap:8px;padding:0 20px 16px;border-top:1px solid var(--border);}
+.cx-item{flex:1;font-size:.65rem;color:var(--muted);text-align:center;}
+
+/* inventory grid */
+.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.inv-card{background:var(--ink2);border:1px solid var(--border);border-radius:14px;padding:18px;transition:border-color .2s;}
+.inv-card:hover{border-color:rgba(240,165,0,.3);}
+.inv-icon{font-size:1.6rem;margin-bottom:10px;}
+.inv-num{font-family:'Clash Display',sans-serif;font-size:1.8rem;font-weight:700;color:var(--white);}
+.inv-label{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.inv-bar-bg{height:4px;background:var(--border);border-radius:4px;margin-top:12px;overflow:hidden;}
+.inv-bar{height:100%;border-radius:4px;}
+
+/* shipment tracker */
+.ship-track-table td{padding:16px 20px;}
+.eta-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:600;}
+.eta-close{background:rgba(232,75,26,.1);color:var(--ember);border:1px solid rgba(232,75,26,.3);}
+.eta-ok{background:rgba(0,191,165,.1);color:var(--jade);border:1px solid rgba(0,191,165,.3);}
+
+/* progress mini */
+.prog-mini{display:flex;gap:3px;align-items:center;}
+.prog-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--border);background:var(--ink3);}
+.prog-dot.done{background:var(--jade);border-color:var(--jade);}
+.prog-dot.active{background:var(--gold);border-color:var(--gold);}
+
+/* order status selector */
+.status-select{height:30px;padding:0 28px 0 10px;background:var(--ink3);border:1px solid var(--border);border-radius:7px;color:var(--body);font-size:.78rem;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' fill='none'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%234A6072' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;transition:border-color .2s;}
+.status-select:focus{border-color:var(--gold);}
+
+/* filter bar */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+.fb-select{height:36px;padding:0 32px 0 12px;background:var(--ink2);border:1px solid var(--border);border-radius:8px;color:var(--body);font-size:.83rem;font-family:inherit;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' fill='none'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%234A6072' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .2s;}
+.fb-select:focus{border-color:var(--gold);}
+.fb-input{height:36px;padding:0 14px;background:var(--ink2);border:1px solid var(--border);border-radius:8px;color:var(--body);font-size:.83rem;outline:none;transition:border-color .2s;flex:1;min-width:180px;}
+.fb-input::placeholder{color:var(--muted);}
+.fb-input:focus{border-color:var(--gold);}
+.fb-count{font-size:.8rem;color:var(--muted);white-space:nowrap;margin-left:auto;}
+.fb-count strong{color:var(--white);}
+
+/* modal / drawer */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:500;}
+.modal-overlay.open{display:flex;align-items:center;justify-content:center;}
+.modal{background:var(--ink2);border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;animation:fadeUp .25s ease;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.modal-title{font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);}
+.modal-close{background:none;border:none;color:var(--muted);font-size:1.2rem;transition:color .15s;}
+.modal-close:hover{color:var(--ember);}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;}
+.form-input{width:100%;height:42px;padding:0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--body);font-size:.88rem;outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--gold);}
+.form-input::placeholder{color:var(--muted);}
+.form-select{width:100%;height:42px;padding:0 36px 0 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--body);font-size:.88rem;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234A6072' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;transition:border-color .2s;}
+.form-select:focus{border-color:var(--gold);}
+.form-textarea{width:100%;padding:10px 14px;background:var(--ink3);border:1.5px solid var(--border);border-radius:9px;color:var(--body);font-size:.88rem;outline:none;resize:vertical;min-height:80px;font-family:inherit;transition:border-color .2s;}
+.form-textarea:focus{border-color:var(--gold);}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;}
+.btn-sm-primary{height:38px;padding:0 20px;background:var(--gold);border:none;border-radius:8px;color:var(--ink);font-size:.85rem;font-weight:700;transition:background .15s;}
+.btn-sm-primary:hover{background:var(--gold2);}
+.btn-sm-outline{height:38px;padding:0 16px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--soft);font-size:.85rem;font-weight:600;transition:border-color .15s,color .15s;}
+.btn-sm-outline:hover{border-color:var(--soft);color:var(--white);}
+
+/* notification toast */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--ink2);border:1px solid var(--jade);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:12px;font-size:.88rem;color:var(--body);box-shadow:0 8px 32px rgba(0,0,0,.4);transform:translateY(80px);opacity:0;transition:transform .3s,opacity .3s;max-width:320px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-icon{font-size:1.2rem;flex-shrink:0;}
+
+/* users view */
+.user-avatar-sm{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--ink);flex-shrink:0;}
+
+/* analytics mini cards */
+.analytics-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+
+/* responsive */
+@media(max-width:1100px){.stat-row{grid-template-columns:repeat(2,1fr);}.grid-2,.grid-3{grid-template-columns:1fr;}.analytics-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);}.main{margin-left:0;}.topbar{left:0;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}.stat-row{grid-template-columns:1fr 1fr;}.inv-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+  <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">A</div>
+    <div><div class="sb-brand">ADEY Admin</div><div class="sb-tagline">Management Console</div></div>
+  </div>
+
+  <div class="sb-section">Main</div>
+  <div class="sb-item active" onclick="showView('overview',this)"><span class="sb-icon">📊</span> Overview</div>
+  <div class="sb-item" onclick="showView('orders',this)"><span class="sb-icon">📦</span> Orders <span class="sb-badge sb-badge-red">14</span></div>
+  <div class="sb-item" onclick="showView('inventory',this)"><span class="sb-icon">🏪</span> Inventory <span class="sb-badge sb-badge-gold">3</span></div>
+  <div class="sb-item" onclick="showView('shipments',this)"><span class="sb-icon">🚢</span> Shipments <span class="sb-badge sb-badge-sky">2</span></div>
+  <div class="sb-item" onclick="showView('customers',this)"><span class="sb-icon">👥</span> Customers</div>
+
+  <div class="sb-section">Finance</div>
+  <div class="sb-item" onclick="showView('payments',this)"><span class="sb-icon">💳</span> Payments</div>
+  <div class="sb-item" onclick="showView('coupons',this)"><span class="sb-icon">🏷️</span> Coupons</div>
+  <div class="sb-item" onclick="showView('analytics',this)"><span class="sb-icon">📈</span> Analytics</div>
+
+  <div class="sb-section">Settings</div>
+  <div class="sb-item" onclick="showView('settings',this)"><span class="sb-icon">⚙️</span> Settings</div>
+  <div class="sb-item" onclick="window.open('adey-homepage.html')"><span class="sb-icon">🔗</span> View Storefront</div>
+
+  <div class="sb-bottom">
+    <div class="sb-env"><span class="sb-env-dot"></span> Production · API Online</div>
+    <button class="sb-logout">↩ Sign Out</button>
+  </div>
+</aside>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="tb-left">
+    <div><div class="tb-title" id="topbarTitle">Overview</div><div class="tb-sub" id="topbarSub">Good afternoon, Admin 👋</div></div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-search"><span style="color:var(--muted);font-size:.85rem;">🔍</span><input type="text" placeholder="Search orders, products…"/></div>
+    <button class="tb-icon-btn">🔔<span class="tb-notif-dot"></span></button>
+    <button class="tb-icon-btn">⚙️</button>
+    <div class="tb-user">
+      <div class="tb-avatar">AA</div>
+      <div><div class="tb-name">ADEY Admin</div><div class="tb-role">Superadmin</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- OVERVIEW -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view active" id="view-overview">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">At a glance</div><div class="sh-title">Dashboard Overview</div></div>
+      <div class="sh-actions">
+        <button class="btn-outline" onclick="showToast('📊 Exporting report…','Generating CSV')">Export Report</button>
+        <button class="btn-primary" onclick="openModal('addProduct')">+ Add Product</button>
+      </div>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="stat-row">
+      <div class="stat-card sc-gold">
+        <div class="stat-icon">💰</div>
+        <div class="stat-num">₦4.2M</div>
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-delta delta-up">↑ ₦840k this month</div>
+      </div>
+      <div class="stat-card sc-jade">
+        <div class="stat-icon">📦</div>
+        <div class="stat-num">1,248</div>
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-delta delta-up">↑ 87 this month</div>
+      </div>
+      <div class="stat-card sc-sky">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num">2,412</div>
+        <div class="stat-label">Customers</div>
+        <div class="stat-delta delta-up">↑ 124 this month</div>
+      </div>
+      <div class="stat-card sc-ember">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-num">14</div>
+        <div class="stat-label">Pending Orders</div>
+        <div class="stat-delta delta-dn">Needs attention</div>
+      </div>
+    </div>
+
+    <!-- Revenue chart + top products -->
+    <div class="grid-3">
+      <!-- Revenue Chart -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Monthly Revenue</div>
+          <select class="fb-select" style="height:30px;font-size:.78rem;">
+            <option>Last 8 months</option><option>Last 12 months</option>
+          </select>
+        </div>
+        <div class="chart-bars" id="revenueChart"></div>
+        <div class="chart-x" id="chartLabels"></div>
+      </div>
+
+      <!-- Top Products -->
+      <div class="panel" style="grid-column:span 1;">
+        <div class="panel-head"><div class="panel-title">Top Products</div><a href="#" class="panel-link" onclick="showView('inventory',null)">View All</a></div>
+        <div class="top-prod-list">
+          <div class="tp-item"><div class="tp-rank">#1</div><div class="tp-img">📱</div><div class="tp-info"><div class="tp-name">Xiaomi Redmi 13C</div><div class="tp-cat">Phones</div></div><div class="tp-revenue"><div class="tp-price">₦1.84M</div><div class="tp-units">20 units</div></div></div>
+          <div class="tp-item"><div class="tp-rank">#2</div><div class="tp-img">🎧</div><div class="tp-info"><div class="tp-name">Pro Earbuds ANC</div><div class="tp-cat">Audio</div></div><div class="tp-revenue"><div class="tp-price">₦798k</div><div class="tp-units">28 units</div></div></div>
+          <div class="tp-item"><div class="tp-rank">#3</div><div class="tp-img">🖥️</div><div class="tp-info"><div class="tp-name">27" Monitor 144Hz</div><div class="tp-cat">Gadgets</div></div><div class="tp-revenue"><div class="tp-price">₦740k</div><div class="tp-units">4 units</div></div></div>
+          <div class="tp-item"><div class="tp-rank">#4</div><div class="tp-img">🔋</div><div class="tp-info"><div class="tp-name">Power Bank 65W</div><div class="tp-cat">Accessories</div></div><div class="tp-revenue"><div class="tp-price">₦418k</div><div class="tp-units">19 units</div></div></div>
+          <div class="tp-item"><div class="tp-rank">#5</div><div class="tp-img">💄</div><div class="tp-info"><div class="tp-name">Hair Straightener</div><div class="tp-cat">Beauty</div></div><div class="tp-revenue"><div class="tp-price">₦351k</div><div class="tp-units">19 units</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent orders -->
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Recent Orders</div>
+        <div class="panel-actions">
+          <a href="#" class="panel-link" onclick="showView('orders',null)">View All Orders →</a>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Reference</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td class="td-mono td-gold">#ADE-20250317-9841</td><td class="td-bold">Emeka Okafor</td><td class="td-muted">3 items</td><td class="td-bold">₦162,000</td><td><span class="badge badge-gold">Processing</span></td><td class="td-muted">Today 08:02</td><td><div class="row-actions"><button class="ra-btn" onclick="showView('orders',null)">View</button><select class="status-select" onchange="statusChanged(this)"><option>Processing</option><option>Confirmed</option><option>Dispatched</option><option>Delivered</option></select></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250316-8820</td><td class="td-bold">Chioma Adeyemi</td><td class="td-muted">1 item</td><td class="td-bold">₦92,000</td><td><span class="badge badge-sky">In Transit</span></td><td class="td-muted">Yesterday</td><td><div class="row-actions"><button class="ra-btn">View</button><select class="status-select" onchange="statusChanged(this)"><option>In Transit</option><option>Customs</option><option>Out for Delivery</option><option>Delivered</option></select></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250315-7714</td><td class="td-bold">Bola Okonkwo</td><td class="td-muted">2 items</td><td class="td-bold">₦46,700</td><td><span class="badge badge-jade">Delivered</span></td><td class="td-muted">Mar 15</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">Invoice</button></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250315-7690</td><td class="td-bold">Tunde Fashola</td><td class="td-muted">1 item</td><td class="td-bold">₦38,000</td><td><span class="badge badge-ember">Pre-Order</span></td><td class="td-muted">Mar 15</td><td><div class="row-actions"><button class="ra-btn">View</button></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250314-6601</td><td class="td-bold">Ngozi Ibe</td><td class="td-muted">4 items</td><td class="td-bold">₦210,000</td><td><span class="badge badge-jade">Delivered</span></td><td class="td-muted">Mar 14</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">Invoice</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- ORDERS -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-orders">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">Manage</div><div class="sh-title">All Orders</div><div class="sh-sub">1,248 total orders · ₦4.2M revenue</div></div>
+      <div class="sh-actions">
+        <button class="btn-outline">📥 Export CSV</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <select class="fb-select" onchange="filterOrders(this)"><option>All Statuses</option><option>Pending</option><option>Confirmed</option><option>Processing</option><option>In Transit</option><option>Out for Delivery</option><option>Delivered</option><option>Pre-Order</option><option>Cancelled</option></select>
+      <select class="fb-select"><option>All Time</option><option>Today</option><option>This Week</option><option>This Month</option></select>
+      <input class="fb-input" type="text" placeholder="Search by reference, customer, phone…"/>
+      <div class="fb-count">Showing <strong>12</strong> of 1,248</div>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Reference</th><th>Customer</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th></th></tr></thead>
+          <tbody id="ordersTable">
+            <tr><td class="td-mono td-gold">#ADE-20250317-9841</td><td class="td-bold">Emeka Okafor</td><td class="td-muted">0812 345 6789</td><td>3</td><td class="td-gold">₦162,000</td><td><span class="badge badge-jade">Paid</span></td><td><select class="status-select" onchange="statusChanged(this)"><option>Processing</option><option>Confirmed</option><option>In Transit</option><option>Customs</option><option>Out for Delivery</option><option>Delivered</option><option>Cancelled</option></select></td><td class="td-muted">Mar 17</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">SMS</button></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250316-8820</td><td class="td-bold">Chioma Adeyemi</td><td class="td-muted">0803 122 4455</td><td>1</td><td class="td-gold">₦92,000</td><td><span class="badge badge-jade">Paid</span></td><td><select class="status-select" onchange="statusChanged(this)"><option>In Transit</option><option>Customs</option><option>Out for Delivery</option><option>Delivered</option></select></td><td class="td-muted">Mar 16</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">SMS</button></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250315-7714</td><td class="td-bold">Bola Okonkwo</td><td class="td-muted">0705 678 9012</td><td>2</td><td class="td-gold">₦46,700</td><td><span class="badge badge-jade">Paid</span></td><td><select class="status-select" onchange="statusChanged(this)"><option>Delivered</option></select></td><td class="td-muted">Mar 15</td><td><div class="row-actions"><button class="ra-btn">View</button></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250315-7690</td><td class="td-bold">Tunde Fashola</td><td class="td-muted">0902 334 5566</td><td>1</td><td class="td-gold">₦38,000</td><td><span class="badge badge-gold">Deposit</span></td><td><select class="status-select" onchange="statusChanged(this)"><option>Pre-Order</option><option>Processing</option><option>In Transit</option></select></td><td class="td-muted">Mar 15</td><td><div class="row-actions"><button class="ra-btn">View</button></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250314-6601</td><td class="td-bold">Ngozi Ibe</td><td class="td-muted">0814 556 7788</td><td>4</td><td class="td-gold">₦210,000</td><td><span class="badge badge-jade">Paid</span></td><td><select class="status-select" onchange="statusChanged(this)"><option>Delivered</option></select></td><td class="td-muted">Mar 14</td><td><div class="row-actions"><button class="ra-btn">View</button></div></td></tr>
+            <tr><td class="td-mono td-gold">#ADE-20250313-5540</td><td class="td-bold">Adaeze Kanu</td><td class="td-muted">0816 990 1122</td><td>1</td><td class="td-gold">₦28,500</td><td><span class="badge badge-jade">Paid</span></td><td><select class="status-select" onchange="statusChanged(this)"><option>Delivered</option></select></td><td class="td-muted">Mar 13</td><td><div class="row-actions"><button class="ra-btn">View</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- INVENTORY -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-inventory">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">Stock Management</div><div class="sh-title">Inventory</div></div>
+      <div class="sh-actions">
+        <button class="btn-outline">📥 Import CSV</button>
+        <button class="btn-primary" onclick="openModal('addProduct')">+ Add Product</button>
+      </div>
+    </div>
+
+    <div class="inv-grid">
+      <div class="inv-card"><div class="inv-icon">📦</div><div class="inv-num">850</div><div class="inv-label">Total Products</div><div class="inv-bar-bg"><div class="inv-bar" style="width:100%;background:var(--jade);"></div></div></div>
+      <div class="inv-card"><div class="inv-icon">✅</div><div class="inv-num">412</div><div class="inv-label">In Stock</div><div class="inv-bar-bg"><div class="inv-bar" style="width:48%;background:var(--jade);"></div></div></div>
+      <div class="inv-card"><div class="inv-icon">⚠️</div><div class="inv-num">38</div><div class="inv-label">Low Stock (≤5 left)</div><div class="inv-bar-bg"><div class="inv-bar" style="width:4%;background:var(--gold);"></div></div></div>
+      <div class="inv-card"><div class="inv-icon">🚢</div><div class="inv-num">184</div><div class="inv-label">In Transit</div><div class="inv-bar-bg"><div class="inv-bar" style="width:22%;background:var(--sky);"></div></div></div>
+      <div class="inv-card"><div class="inv-icon">⏳</div><div class="inv-num">127</div><div class="inv-label">Pre-Order</div><div class="inv-bar-bg"><div class="inv-bar" style="width:15%;background:var(--ember);"></div></div></div>
+      <div class="inv-card"><div class="inv-icon">❌</div><div class="inv-num">89</div><div class="inv-label">Out of Stock</div><div class="inv-bar-bg"><div class="inv-bar" style="width:10%;background:var(--ember);"></div></div></div>
+    </div>
+
+    <div class="filter-bar">
+      <select class="fb-select"><option>All Categories</option><option>Phones & Tablets</option><option>Audio</option><option>Smart Gadgets</option><option>Fashion</option><option>Home & Kitchen</option><option>Beauty</option></select>
+      <select class="fb-select"><option>All Availability</option><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option><option>In Transit</option><option>Pre-Order</option></select>
+      <input class="fb-input" type="text" placeholder="Search products…"/>
+    </div>
+
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Stock</th><th>Reserved</th><th>Sell Price</th><th>Cost</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="td-muted">ADE-AUD-001</td><td><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🎧</span><span class="td-bold">Pro Wireless Earbuds ANC</span></div></td><td class="td-muted">Audio</td><td class="td-bold">23</td><td class="td-muted">2</td><td class="td-gold">₦28,500</td><td class="td-muted">₦8,500</td><td><span class="badge badge-jade">In Stock</span></td><td><div class="row-actions"><button class="ra-btn" onclick="openModal('editProduct')">Edit</button><button class="ra-btn ra-btn-danger">Remove</button></div></td></tr>
+            <tr><td class="td-muted">ADE-PHN-001</td><td><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">📱</span><span class="td-bold">Xiaomi Redmi 13C 128GB</span></div></td><td class="td-muted">Phones</td><td class="td-bold" style="color:var(--gold);">8</td><td class="td-muted">3</td><td class="td-gold">₦92,000</td><td class="td-muted">₦25,000</td><td><span class="badge badge-gold">Low Stock</span></td><td><div class="row-actions"><button class="ra-btn" onclick="openModal('editProduct')">Edit</button><button class="ra-btn ra-btn-danger">Remove</button></div></td></tr>
+            <tr><td class="td-muted">ADE-GAD-001</td><td><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">💡</span><span class="td-bold">RGB LED Strip 10m</span></div></td><td class="td-muted">Smart Gadgets</td><td class="td-bold">0</td><td class="td-muted">0</td><td class="td-gold">₦14,200</td><td class="td-muted">₦3,500</td><td><span class="badge badge-sky">In Transit</span></td><td><div class="row-actions"><button class="ra-btn" onclick="openModal('editProduct')">Edit</button></div></td></tr>
+            <tr><td class="td-muted">ADE-WEA-001</td><td><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">⌚</span><span class="td-bold">Smart Watch Ultra</span></div></td><td class="td-muted">Wearables</td><td class="td-bold">0</td><td class="td-muted">0</td><td class="td-gold">₦38,000</td><td class="td-muted">₦10,000</td><td><span class="badge badge-ember">Pre-Order</span></td><td><div class="row-actions"><button class="ra-btn" onclick="openModal('editProduct')">Edit</button></div></td></tr>
+            <tr><td class="td-muted">ADE-GAD-002</td><td><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🖥️</span><span class="td-bold">IPS 27" Monitor 144Hz</span></div></td><td class="td-muted">Gadgets</td><td class="td-bold" style="color:var(--ember);">3</td><td class="td-muted">1</td><td class="td-gold">₦185,000</td><td class="td-muted">₦52,000</td><td><span class="badge badge-gold">Low Stock</span></td><td><div class="row-actions"><button class="ra-btn" onclick="openModal('editProduct')">Edit</button></div></td></tr>
+            <tr><td class="td-muted">ADE-ACC-001</td><td><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.4rem;">🔋</span><span class="td-bold">Power Bank 65W 20,000mAh</span></div></td><td class="td-muted">Accessories</td><td class="td-bold">94</td><td class="td-muted">0</td><td class="td-gold">₦22,000</td><td class="td-muted">₦5,500</td><td><span class="badge badge-jade">In Stock</span></td><td><div class="row-actions"><button class="ra-btn" onclick="openModal('editProduct')">Edit</button><button class="ra-btn ra-btn-danger">Remove</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SHIPMENTS -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-shipments">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">Logistics</div><div class="sh-title">Shipment Management</div></div>
+      <div class="sh-actions">
+        <button class="btn-primary" onclick="openModal('addShipment')">+ New Shipment</button>
+      </div>
+    </div>
+
+    <!-- Active shipments tracker -->
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">🚢 SHP-20250308-001 · COSCO Guangzhou</div><span class="badge badge-sky">Customs Clearance</span></div>
+        <div style="padding:20px 24px;">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px;">Origin → Destination</div><div style="font-size:.9rem;font-weight:600;color:var(--white);">Guangzhou 🇨🇳 → Lagos 🇳🇬</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px;">Departed</div><div style="font-size:.9rem;color:var(--body);">Mar 12, 2025</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px;">ETA Lagos</div><div style="font-size:.9rem;font-weight:600;" style="color:var(--jade);">Mar 18, 2025 <span class="eta-chip eta-close">Tomorrow</span></div></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <div class="prog-dot done"></div><div class="prog-dot done"></div><div class="prog-dot done"></div><div class="prog-dot done"></div><div class="prog-dot active"></div><div class="prog-dot"></div>
+          </div>
+          <div style="font-size:.78rem;color:var(--gold);">📍 Currently: Apapa Port — Customs Inspection</div>
+          <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+            <select class="fb-select" onchange="updateShipStatus(this)" style="height:34px;">
+              <option>Customs Clearance</option><option>Cleared</option><option>Distributed</option>
+            </select>
+            <button class="btn-outline" style="height:34px;font-size:.78rem;" onclick="showToast('📲 SMS sent to all affected customers','Shipment Update')">📲 Notify Customers</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">🚢 SHP-20250320-002 · Evergreen Manila</div><span class="badge badge-muted">In Transit</span></div>
+        <div style="padding:20px 24px;">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px;">Origin → Destination</div><div style="font-size:.9rem;font-weight:600;color:var(--white);">Guangzhou 🇨🇳 → Lagos 🇳🇬</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px;">Departed</div><div style="font-size:.9rem;color:var(--body);">Mar 20, 2025</div></div>
+            <div><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px;">ETA Lagos</div><div style="font-size:.9rem;font-weight:600;">Mar 28, 2025 <span class="eta-chip eta-ok">11 days</span></div></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <div class="prog-dot done"></div><div class="prog-dot done"></div><div class="prog-dot active"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+          </div>
+          <div style="font-size:.78rem;color:var(--sky);">📍 Currently: South China Sea — In Transit</div>
+          <div style="display:flex;gap:8px;margin-top:16px;">
+            <select class="fb-select" style="height:34px;">
+              <option>In Transit</option><option>Arrived Port</option><option>Customs Clearance</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipment history table -->
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Shipment History</div></div>
+      <div class="table-wrap">
+        <table class="ship-track-table">
+          <thead><tr><th>Reference</th><th>Vessel</th><th>Items</th><th>Departed</th><th>ETA / Arrived</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="td-mono td-gold">SHP-20250308-001</td><td>COSCO Guangzhou</td><td class="td-muted">47 items</td><td class="td-muted">Mar 12</td><td><span class="eta-chip eta-close">Mar 18</span></td><td><span class="badge badge-sky">Customs</span></td><td><div class="row-actions"><button class="ra-btn">Details</button></div></td></tr>
+            <tr><td class="td-mono td-gold">SHP-20250320-002</td><td>Evergreen Manila</td><td class="td-muted">63 items</td><td class="td-muted">Mar 20</td><td><span class="eta-chip eta-ok">Mar 28</span></td><td><span class="badge badge-muted">In Transit</span></td><td><div class="row-actions"><button class="ra-btn">Details</button></div></td></tr>
+            <tr><td class="td-mono td-gold">SHP-20250220-003</td><td>MSC Carina</td><td class="td-muted">91 items</td><td class="td-muted">Feb 20</td><td class="td-muted">Mar 4</td><td><span class="badge badge-jade">Distributed</span></td><td><div class="row-actions"><button class="ra-btn">Details</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- CUSTOMERS -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-customers">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">CRM</div><div class="sh-title">Customers</div><div class="sh-sub">2,412 registered · 124 new this month</div></div>
+      <div class="sh-actions"><button class="btn-outline">📥 Export</button></div>
+    </div>
+    <div class="filter-bar">
+      <select class="fb-select"><option>All Tiers</option><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option></select>
+      <input class="fb-input" type="text" placeholder="Search name, email, phone…"/>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Customer</th><th>Phone</th><th>Orders</th><th>Total Spend</th><th>Tier</th><th>Points</th><th>Joined</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="user-avatar-sm" style="background:linear-gradient(135deg,var(--gold),var(--ember));">EO</div><div><div class="td-bold">Emeka Okafor</div><div class="td-muted" style="font-size:.72rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d181018161c3d1a101c1411531e1210">[email&#160;protected]</a></div></div></div></td><td class="td-muted">0812 345 6789</td><td class="td-bold">12</td><td class="td-gold">₦512,000</td><td><span class="badge badge-gold">⭐ Gold</span></td><td class="td-muted">1,240</td><td class="td-muted">Jan 2025</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">SMS</button></div></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="user-avatar-sm" style="background:linear-gradient(135deg,var(--sky),var(--jade));">CA</div><div><div class="td-bold">Chioma Adeyemi</div><div class="td-muted" style="font-size:.72rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b18131214161a551a3b021a13141455181416">[email&#160;protected]</a></div></div></div></td><td class="td-muted">0803 122 4455</td><td class="td-bold">7</td><td class="td-gold">₦340,000</td><td><span class="badge badge-sky">🥈 Silver</span></td><td class="td-muted">680</td><td class="td-muted">Feb 2025</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">SMS</button></div></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="user-avatar-sm" style="background:linear-gradient(135deg,var(--jade),var(--sky));">NI</div><div><div class="td-bold">Ngozi Ibe</div><div class="td-muted" style="font-size:.72rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="741a131b0e1d5a1d1611341319151d185a171b19">[email&#160;protected]</a></div></div></div></td><td class="td-muted">0814 556 7788</td><td class="td-bold">19</td><td class="td-gold">₦890,000</td><td><span class="badge badge-purple">💎 Platinum</span></td><td class="td-muted">3,560</td><td class="td-muted">Nov 2024</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">SMS</button></div></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="user-avatar-sm" style="background:linear-gradient(135deg,var(--ember),var(--gold));">TF</div><div><div class="td-bold">Tunde Fashola</div><div class="td-muted" style="font-size:.72rem;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c7879626869226a4c646378616d6560226f6361">[email&#160;protected]</a></div></div></div></td><td class="td-muted">0902 334 5566</td><td class="td-bold">3</td><td class="td-gold">₦128,000</td><td><span class="badge badge-muted">🥉 Bronze</span></td><td class="td-muted">256</td><td class="td-muted">Mar 2025</td><td><div class="row-actions"><button class="ra-btn">View</button><button class="ra-btn">SMS</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- PAYMENTS -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-payments">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">Finance</div><div class="sh-title">Payment Transactions</div></div>
+    </div>
+    <div class="stat-row" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat-card sc-gold"><div class="stat-icon">💰</div><div class="stat-num">₦4.2M</div><div class="stat-label">Total Received</div></div>
+      <div class="stat-card sc-sky"><div class="stat-icon">⏳</div><div class="stat-num">₦84k</div><div class="stat-label">Deposit Balances Due</div></div>
+      <div class="stat-card sc-ember"><div class="stat-icon">↩️</div><div class="stat-num">₦12k</div><div class="stat-label">Refunds Issued</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div class="panel-title">Recent Transactions</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Paystack Ref</th><th>Order</th><th>Customer</th><th>Amount</th><th>Channel</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td class="td-muted" style="font-size:.75rem;">PAY-ADE-9841-1710671234</td><td class="td-gold">ADE-20250317-9841</td><td>Emeka Okafor</td><td class="td-bold">₦162,000</td><td><span class="badge badge-sky">Card</span></td><td><span class="badge badge-jade">Success</span></td><td class="td-muted">Mar 17 08:02</td></tr>
+            <tr><td class="td-muted" style="font-size:.75rem;">PAY-ADE-8820-1710585000</td><td class="td-gold">ADE-20250316-8820</td><td>Chioma Adeyemi</td><td class="td-bold">₦92,000</td><td><span class="badge badge-jade">Transfer</span></td><td><span class="badge badge-jade">Success</span></td><td class="td-muted">Mar 16 14:30</td></tr>
+            <tr><td class="td-muted" style="font-size:.75rem;">PAY-ADE-7690-1710498600</td><td class="td-gold">ADE-20250315-7690</td><td>Tunde Fashola</td><td class="td-bold">₦11,400</td><td><span class="badge badge-gold">USSD</span></td><td><span class="badge badge-gold">Deposit</span></td><td class="td-muted">Mar 15 10:15</td></tr>
+            <tr><td class="td-muted" style="font-size:.75rem;">PAY-ADE-6601-1710412200</td><td class="td-gold">ADE-20250314-6601</td><td>Ngozi Ibe</td><td class="td-bold">₦210,000</td><td><span class="badge badge-sky">Card</span></td><td><span class="badge badge-jade">Success</span></td><td class="td-muted">Mar 14 16:30</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- COUPONS -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-coupons">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">Promotions</div><div class="sh-title">Coupon Codes</div></div>
+      <div class="sh-actions"><button class="btn-primary" onclick="openModal('addCoupon')">+ Create Coupon</button></div>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Used</th><th>Expires</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><code style="background:var(--ink3);padding:3px 8px;border-radius:5px;font-size:.82rem;color:var(--gold);">ADEY10</code></td><td class="td-muted">Percent</td><td class="td-bold">10% off</td><td class="td-muted">₦20,000</td><td class="td-muted">47 / 500</td><td class="td-muted">No expiry</td><td><span class="badge badge-jade">Active</span></td><td><div class="row-actions"><button class="ra-btn">Edit</button><button class="ra-btn ra-btn-danger">Disable</button></div></td></tr>
+            <tr><td><code style="background:var(--ink3);padding:3px 8px;border-radius:5px;font-size:.82rem;color:var(--gold);">WELCOME5K</code></td><td class="td-muted">Fixed</td><td class="td-bold">₦5,000 off</td><td class="td-muted">₦30,000</td><td class="td-muted">12 / 100</td><td class="td-muted">No expiry</td><td><span class="badge badge-jade">Active</span></td><td><div class="row-actions"><button class="ra-btn">Edit</button><button class="ra-btn ra-btn-danger">Disable</button></div></td></tr>
+            <tr><td><code style="background:var(--ink3);padding:3px 8px;border-radius:5px;font-size:.82rem;color:var(--muted);">FLASH20</code></td><td class="td-muted">Percent</td><td class="td-bold">20% off</td><td class="td-muted">₦50,000</td><td class="td-muted">88 / 100</td><td class="td-muted">Mar 15</td><td><span class="badge badge-muted">Expired</span></td><td><div class="row-actions"><button class="ra-btn">Clone</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- ANALYTICS -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-analytics">
+    <div class="section-head">
+      <div class="sh-left"><div class="sh-eyebrow">Business Intelligence</div><div class="sh-title">Analytics</div></div>
+    </div>
+    <div class="analytics-row">
+      <div class="stat-card sc-gold"><div class="stat-icon">📈</div><div class="stat-num">68%</div><div class="stat-label">Margin (avg)</div></div>
+      <div class="stat-card sc-jade"><div class="stat-icon">🔁</div><div class="stat-num">34%</div><div class="stat-label">Repeat buyers</div></div>
+      <div class="stat-card sc-sky"><div class="stat-icon">🛒</div><div class="stat-num">₦134k</div><div class="stat-label">Avg order value</div></div>
+      <div class="stat-card sc-ember"><div class="stat-icon">📦</div><div class="stat-num">2.1d</div><div class="stat-label">Avg delivery time</div></div>
+      <div class="stat-card sc-purple"><div class="stat-icon">🏷️</div><div class="stat-num">22%</div><div class="stat-label">Orders with coupon</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Revenue by Month</div></div>
+        <div class="chart-bars" id="analyticsChart"></div>
+        <div class="chart-x" id="analyticsLabels"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Orders by Category</div></div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.1rem;width:24px;">📱</span><span style="flex:1;font-size:.85rem;color:var(--body);">Phones & Tablets</span><div style="flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:38%;height:100%;background:var(--gold);border-radius:3px;"></div></div><span class="td-gold" style="font-size:.82rem;min-width:30px;text-align:right;">38%</span></div>
+          <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.1rem;width:24px;">🎧</span><span style="flex:1;font-size:.85rem;color:var(--body);">Audio</span><div style="flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:22%;height:100%;background:var(--sky);border-radius:3px;"></div></div><span class="td-gold" style="font-size:.82rem;min-width:30px;text-align:right;">22%</span></div>
+          <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.1rem;width:24px;">💡</span><span style="flex:1;font-size:.85rem;color:var(--body);">Smart Gadgets</span><div style="flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:18%;height:100%;background:var(--jade);border-radius:3px;"></div></div><span class="td-gold" style="font-size:.82rem;min-width:30px;text-align:right;">18%</span></div>
+          <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.1rem;width:24px;">🏠</span><span style="flex:1;font-size:.85rem;color:var(--body);">Home & Kitchen</span><div style="flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:12%;height:100%;background:var(--ember);border-radius:3px;"></div></div><span class="td-gold" style="font-size:.82rem;min-width:30px;text-align:right;">12%</span></div>
+          <div style="display:flex;align-items:center;gap:12px;"><span style="font-size:1.1rem;width:24px;">💄</span><span style="flex:1;font-size:.85rem;color:var(--body);">Beauty & Care</span><div style="flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="width:10%;height:100%;background:var(--purple);border-radius:3px;"></div></div><span class="td-gold" style="font-size:.82rem;min-width:30px;text-align:right;">10%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- SETTINGS -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="view" id="view-settings">
+    <div class="section-head"><div class="sh-left"><div class="sh-eyebrow">Configuration</div><div class="sh-title">Store Settings</div></div></div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Store Information</div></div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:14px;">
+          <div class="form-group"><label class="form-label">Store Name</label><input class="form-input" value="ADEY Imports"/></div>
+          <div class="form-group"><label class="form-label">Support Email</label><input class="form-input" type="email" value="support@adeyimports.com"/></div>
+          <div class="form-group"><label class="form-label">Support Phone</label><input class="form-input" value="+234 800 ADEY SHOP"/></div>
+          <div class="form-group"><label class="form-label">Store Address</label><input class="form-input" value="Admiralty Way, Lekki Phase 1, Lagos"/></div>
+          <button class="btn-primary" style="width:fit-content;" onclick="showToast('✅ Settings saved','Store info updated')">Save Changes</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Delivery Settings</div></div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:14px;">
+          <div class="form-group"><label class="form-label">Standard Delivery Fee (₦)</label><input class="form-input" type="number" value="1500"/></div>
+          <div class="form-group"><label class="form-label">Express Delivery Fee (₦)</label><input class="form-input" type="number" value="3000"/></div>
+          <div class="form-group"><label class="form-label">Free Delivery Threshold (₦)</label><input class="form-input" type="number" value="30000"/></div>
+          <div class="form-group"><label class="form-label">Pre-order Deposit %</label><input class="form-input" type="number" value="30"/></div>
+          <button class="btn-primary" style="width:fit-content;" onclick="showToast('✅ Delivery settings saved','')">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <!-- Add/Edit Product -->
+  <div class="modal" id="modal-addProduct" onclick="event.stopPropagation()" style="display:none;">
+    <div class="modal-head"><div class="modal-title">Add New Product</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Product Name *</label><input class="form-input" placeholder="e.g. Pro Wireless Earbuds ANC"/></div><div class="form-group"><label class="form-label">SKU *</label><input class="form-input" placeholder="ADE-AUD-001"/></div></div>
+    <div class="form-group"><label class="form-label">Category *</label><select class="form-select"><option>Select category…</option><option>Phones & Tablets</option><option>Audio</option><option>Smart Gadgets</option><option>Fashion</option><option>Home & Kitchen</option><option>Beauty</option><option>Wearables</option><option>Accessories</option></select></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Selling Price (₦) *</label><input class="form-input" type="number" placeholder="28500"/></div><div class="form-group"><label class="form-label">Compare Price (₦)</label><input class="form-input" type="number" placeholder="45000"/></div></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Cost Price (₦) *</label><input class="form-input" type="number" placeholder="8500"/></div><div class="form-group"><label class="form-label">Stock Qty</label><input class="form-input" type="number" placeholder="0"/></div></div>
+    <div class="form-group"><label class="form-label">Availability</label><select class="form-select"><option>IN_STOCK</option><option>LOW_STOCK</option><option>IN_TRANSIT</option><option>PRE_ORDER</option><option>OUT_OF_STOCK</option></select></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Product description…"></textarea></div>
+    <div class="modal-footer"><button class="btn-sm-outline" onclick="closeModal()">Cancel</button><button class="btn-sm-primary" onclick="saveProduct()">Save Product</button></div>
+  </div>
+
+  <!-- Edit Product -->
+  <div class="modal" id="modal-editProduct" onclick="event.stopPropagation()" style="display:none;">
+    <div class="modal-head"><div class="modal-title">Edit Product</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Product Name</label><input class="form-input" value="Pro Wireless Earbuds ANC"/></div><div class="form-group"><label class="form-label">SKU</label><input class="form-input" value="ADE-AUD-001"/></div></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Selling Price (₦)</label><input class="form-input" type="number" value="28500"/></div><div class="form-group"><label class="form-label">Stock Qty</label><input class="form-input" type="number" value="23"/></div></div>
+    <div class="form-group"><label class="form-label">Availability</label><select class="form-select"><option selected>IN_STOCK</option><option>LOW_STOCK</option><option>IN_TRANSIT</option><option>PRE_ORDER</option><option>OUT_OF_STOCK</option></select></div>
+    <div class="modal-footer"><button class="btn-sm-outline" onclick="closeModal()">Cancel</button><button class="btn-sm-primary" onclick="saveProduct()">Save Changes</button></div>
+  </div>
+
+  <!-- Add Shipment -->
+  <div class="modal" id="modal-addShipment" onclick="event.stopPropagation()" style="display:none;">
+    <div class="modal-head"><div class="modal-title">Create New Shipment</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Reference *</label><input class="form-input" placeholder="SHP-20250325-001"/></div><div class="form-group"><label class="form-label">Vessel Name</label><input class="form-input" placeholder="COSCO Guangzhou"/></div></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Departure Date</label><input class="form-input" type="date"/></div><div class="form-group"><label class="form-label">ETA Lagos</label><input class="form-input" type="date"/></div></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" placeholder="Add shipment notes…"></textarea></div>
+    <div class="modal-footer"><button class="btn-sm-outline" onclick="closeModal()">Cancel</button><button class="btn-sm-primary" onclick="closeModal();showToast('🚢 Shipment created','SHP reference saved')">Create Shipment</button></div>
+  </div>
+
+  <!-- Add Coupon -->
+  <div class="modal" id="modal-addCoupon" onclick="event.stopPropagation()" style="display:none;">
+    <div class="modal-head"><div class="modal-title">Create Coupon Code</div><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Coupon Code *</label><input class="form-input" placeholder="ADEY15" style="text-transform:uppercase;"/></div><div class="form-group"><label class="form-label">Type</label><select class="form-select"><option value="percent">Percentage (%)</option><option value="fixed">Fixed Amount (₦)</option></select></div></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Value *</label><input class="form-input" type="number" placeholder="10"/></div><div class="form-group"><label class="form-label">Min Order Value (₦)</label><input class="form-input" type="number" placeholder="20000"/></div></div>
+    <div class="form-row-2"><div class="form-group"><label class="form-label">Max Uses</label><input class="form-input" type="number" placeholder="500"/></div><div class="form-group"><label class="form-label">Expires At</label><input class="form-input" type="date"/></div></div>
+    <div class="modal-footer"><button class="btn-sm-outline" onclick="closeModal()">Cancel</button><button class="btn-sm-primary" onclick="closeModal();showToast('🏷️ Coupon created','Code is now active')">Create Coupon</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="toast-icon" id="toastIcon">✅</span><div id="toastMsg">Done</div></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* cursor */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-5+'px';cur.style.top=my-5+'px';});
+(function a(){rx+=(mx-rx-18)*.14;ry+=(my-ry-18)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('a,button,input,select,.sb-item,tbody tr').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='scale(2)';ring.style.transform='scale(1.3)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';ring.style.transform='scale(1)';});
+});
+
+/* view switching */
+function showView(id, navEl){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if(navEl){
+    document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
+    navEl.classList.add('active');
+  }
+  const titles={overview:'Overview',orders:'Orders',inventory:'Inventory',shipments:'Shipments',customers:'Customers',payments:'Payments',coupons:'Coupons',analytics:'Analytics',settings:'Settings'};
+  document.getElementById('topbarTitle').textContent=titles[id]||id;
+}
+
+/* revenue chart */
+const months=['Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+const values=[380,510,620,490,840,720,910,1040];
+const maxVal=Math.max(...values);
+const chartEl=document.getElementById('revenueChart');
+const labelsEl=document.getElementById('chartLabels');
+const analChart=document.getElementById('analyticsChart');
+const analLabels=document.getElementById('analyticsLabels');
+
+function buildChart(chartWrap, labelsWrap, vals, lbls){
+  chartWrap.innerHTML='';
+  labelsWrap.innerHTML='';
+  const maxV=Math.max(...vals);
+  vals.forEach((v,i)=>{
+    const pct=Math.round((v/maxV)*90)+10;
+    const w=document.createElement('div');w.className='bar-wrap';
+    const b=document.createElement('div');b.className='bar'+(i===vals.length-1?' active':'');
+    b.style.height='0%';b.style.transition=`height .8s ${i*.06}s ease`;
+    w.appendChild(b);chartWrap.appendChild(w);
+    setTimeout(()=>b.style.height=pct+'%',100);
+    const lx=document.createElement('div');lx.className='cx-item';lx.textContent=lbls[i];
+    labelsWrap.appendChild(lx);
+  });
+}
+buildChart(chartEl,labelsEl,values,months);
+buildChart(analChart,analLabels,values,months);
+
+/* modal */
+function openModal(id){
+  document.getElementById('modalOverlay').classList.add('open');
+  document.querySelectorAll('.modal').forEach(m=>m.style.display='none');
+  document.getElementById('modal-'+id).style.display='block';
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+/* toast */
+let toastTimer;
+function showToast(msg,sub){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').innerHTML=msg+(sub?`<div style="font-size:.75rem;color:var(--muted);margin-top:2px;">${sub}</div>`:'');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),32

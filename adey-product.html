@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADEY — Pro Wireless Earbuds ANC</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0A0D0F;--ink2:#141A1F;--ink3:#1C2530;--border:#222D38;
+  --muted:#4A6072;--soft:#8AA0B0;--body:#C8D8E4;--white:#F0F6FA;
+  --gold:#F0A500;--gold2:#FFCC55;--ember:#E84B1A;--jade:#00BFA5;--sky:#1A8FD1;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--body);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden;cursor:none;}
+.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:transform .15s;mix-blend-mode:difference;}
+.cursor-ring{width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;}
+a{color:inherit;text-decoration:none;}button{cursor:none;font-family:inherit;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--ink2);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:72px;background:rgba(10,13,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-brand{font-family:'Clash Display',sans-serif;font-weight:700;font-size:1.35rem;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;align-items:center;gap:36px;list-style:none;}
+.nav-links a{font-size:.88rem;font-weight:500;color:var(--soft);transition:color .2s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1.5px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
+.nav-links a:hover{color:var(--white);}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-actions{display:flex;align-items:center;gap:14px;}
+.btn-ghost{height:40px;padding:0 20px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--soft);font-size:.85rem;font-weight:500;transition:border-color .2s,color .2s;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--white);}
+.btn-primary{height:40px;padding:0 22px;background:var(--gold);border:none;border-radius:8px;color:var(--ink);font-size:.85rem;font-weight:700;transition:background .2s,transform .15s;display:flex;align-items:center;gap:7px;}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-1px);}
+.cart-btn{position:relative;width:40px;height:40px;background:var(--ink3);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:1.1rem;transition:border-color .2s,color .2s;}
+.cart-btn:hover{border-color:var(--gold);color:var(--gold);}
+.cart-badge{position:absolute;top:-5px;right:-5px;width:17px;height:17px;background:var(--ember);border-radius:50%;font-size:.6rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--ink);}
+
+/* ── BREADCRUMB ── */
+.breadcrumb-bar{padding:88px 80px 0;max-width:1400px;margin:0 auto;}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);}
+.breadcrumb a:hover{color:var(--gold);}
+.breadcrumb-sep{color:var(--border);}
+.breadcrumb span{color:var(--body);}
+
+/* ── MAIN PRODUCT LAYOUT ── */
+.product-main{display:grid;grid-template-columns:1fr 1fr;gap:64px;max-width:1400px;margin:0 auto;padding:40px 80px 80px;}
+
+/* ── GALLERY ── */
+.gallery{position:sticky;top:92px;height:fit-content;}
+
+.main-img-wrap{
+  position:relative;
+  background:linear-gradient(145deg,var(--ink3) 0%,#0d1622 100%);
+  border:1px solid var(--border);border-radius:24px;
+  overflow:hidden;aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+}
+.main-img-wrap::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 25%,rgba(240,165,0,.1),transparent 55%),
+             radial-gradient(circle at 70% 75%,rgba(0,191,165,.07),transparent 55%);
+}
+.main-emoji{font-size:9rem;line-height:1;position:relative;z-index:1;
+  animation:floatEmoji 4s ease-in-out infinite;
+  filter:drop-shadow(0 16px 48px rgba(240,165,0,.2));
+}
+@keyframes floatEmoji{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-12px) rotate(2deg);}}
+
+.img-badges{position:absolute;top:20px;left:20px;display:flex;flex-direction:column;gap:8px;z-index:2;}
+.img-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.ibadge-hot{background:rgba(0,191,165,.2);color:var(--jade);border:1px solid rgba(0,191,165,.4);}
+.ibadge-sale{background:rgba(232,75,26,.2);color:var(--ember);border:1px solid rgba(232,75,26,.45);}
+
+.discount-circle{position:absolute;top:20px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--ember);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff;text-align:center;line-height:1.25;z-index:2;
+  animation:discountPop .5s .4s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes discountPop{from{opacity:0;transform:scale(0);}to{opacity:1;transform:scale(1);}}
+
+.zoom-hint{position:absolute;bottom:16px;right:16px;background:rgba(10,13,15,.7);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:6px;z-index:2;opacity:0;transition:opacity .2s;}
+.main-img-wrap:hover .zoom-hint{opacity:1;}
+
+/* thumbnails */
+.thumbs{display:flex;gap:10px;}
+.thumb{
+  flex:1;aspect-ratio:1;border-radius:12px;
+  background:var(--ink3);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;transition:border-color .2s,transform .15s;
+  overflow:hidden;position:relative;
+}
+.thumb:hover,.thumb.active{border-color:var(--gold);transform:scale(1.04);}
+.thumb.active::after{content:'';position:absolute;inset:0;background:rgba(240,165,0,.08);}
+.thumb-emoji{font-size:1.6rem;}
+
+/* share row */
+.share-row{display:flex;align-items:center;gap:10px;margin-top:20px;}
+.share-label{font-size:.78rem;color:var(--muted);font-weight:600;}
+.share-btn{width:34px;height:34px;border-radius:8px;background:var(--ink3);border:1px solid var(--border);color:var(--soft);font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s;}
+.share-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── PRODUCT INFO ── */
+.product-info{}
+
+.pi-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.pi-cat{font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);}
+.pi-sep{color:var(--border);}
+.pi-sku{font-size:.75rem;color:var(--muted);}
+
+.pi-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(1.6rem,2.8vw,2.6rem);font-weight:700;
+  color:var(--white);letter-spacing:-.02em;line-height:1.15;
+  margin-bottom:20px;
+}
+
+/* rating bar */
+.pi-rating{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
+.stars-lg{color:var(--gold);font-size:1.1rem;letter-spacing:.02em;}
+.rating-score{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--white);}
+.rating-count{font-size:.85rem;color:var(--muted);}
+.rating-divider{color:var(--border);}
+.verified-badge{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--jade);font-weight:600;}
+
+/* price block */
+.price-block{
+  background:var(--ink2);border:1px solid var(--border);border-radius:16px;
+  padding:24px;margin-bottom:28px;
+}
+.price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
+.price-main{font-family:'Clash Display',sans-serif;font-size:2.4rem;font-weight:700;color:var(--gold);line-height:1;}
+.price-old{font-size:1.1rem;color:var(--muted);text-decoration:line-through;}
+.price-save{
+  display:inline-flex;align-items:center;
+  background:rgba(232,75,26,.15);border:1px solid rgba(232,75,26,.4);
+  border-radius:100px;padding:3px 10px;
+  font-size:.75rem;font-weight:700;color:var(--ember);
+}
+.price-note{font-size:.82rem;color:var(--muted);line-height:1.5;}
+.price-note strong{color:var(--jade);}
+
+/* stock indicator */
+.stock-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 0;border-top:1px solid var(--border);margin-top:16px;
+}
+.stock-visual{flex:1;height:5px;background:var(--ink3);border-radius:5px;overflow:hidden;}
+.stock-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--jade),var(--gold));width:32%;}
+.stock-text{font-size:.8rem;font-weight:600;}
+.stock-text.low{color:var(--ember);}
+.stock-text.ok{color:var(--jade);}
+
+/* options */
+.option-group{margin-bottom:24px;}
+.option-label{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.option-selected{color:var(--white);font-weight:600;letter-spacing:0;text-transform:none;}
+
+.color-opts{display:flex;gap:8px;}
+.color-opt{
+  width:36px;height:36px;border-radius:50%;border:2.5px solid transparent;
+  transition:border-color .2s,transform .15s;position:relative;
+}
+.color-opt:hover,.color-opt.active{border-color:var(--gold);transform:scale(1.1);}
+.color-opt.active::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#fff;font-weight:800;}
+
+.variant-opts{display:flex;gap:8px;flex-wrap:wrap;}
+.variant-opt{
+  height:38px;padding:0 18px;border-radius:8px;
+  background:var(--ink3);border:1.5px solid var(--border);
+  color:var(--soft);font-size:.85rem;font-weight:600;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.variant-opt:hover{border-color:var(--soft);color:var(--white);}
+.variant-opt.active{border-color:var(--gold);color:var(--gold);background:rgba(240,165,0,.08);}
+.variant-opt.out{opacity:.35;pointer-events:none;text-decoration:line-through;}
+
+/* qty + CTA */
+.purchase-row{display:flex;gap:12px;margin-bottom:20px;align-items:stretch;}
+
+.qty-control{
+  display:flex;align-items:center;
+  background:var(--ink3);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;
+}
+.qty-btn{width:42px;height:52px;border:none;background:transparent;color:var(--soft);font-size:1.2rem;font-weight:700;transition:color .2s,background .2s;}
+.qty-btn:hover{color:var(--gold);background:rgba(240,165,0,.08);}
+.qty-num{width:44px;text-align:center;font-family:'Clash Display',sans-serif;font-weight:700;font-size:1rem;color:var(--white);background:transparent;border:none;outline:none;}
+
+.cta-cart{
+  flex:1;height:52px;
+  background:var(--gold);border:none;border-radius:10px;
+  color:var(--ink);font-size:.95rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .2s,transform .15s,box-shadow .2s;
+}
+.cta-cart:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(240,165,0,.28);}
+.cta-cart.added{background:var(--jade);color:#fff;}
+
+.cta-wish{
+  width:52px;height:52px;
+  background:var(--ink3);border:1.5px solid var(--border);border-radius:10px;
+  color:var(--soft);font-size:1.3rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.cta-wish:hover,.cta-wish.active{border-color:var(--ember);color:var(--ember);background:rgba(232,75,26,.08);}
+
+.cta-secondary-row{display:flex;gap:10px;margin-bottom:32px;}
+.cta-full{
+  flex:1;height:48px;border-radius:10px;
+  background:transparent;border:1.5px solid var(--border);
+  color:var(--body);font-size:.88rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:border-color .2s,color .2s,background .2s,transform .15s;
+}
+.cta-full:hover{border-color:var(--sky);color:var(--sky);background:rgba(26,143,209,.05);transform:translateY(-1px);}
+
+/* trust pills */
+.trust-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;}
+.trust-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--ink2);border:1px solid var(--border);border-radius:100px;
+  padding:7px 14px;font-size:.78rem;color:var(--soft);
+}
+.trust-pill span{font-size:.9rem;}
+
+/* delivery info */
+.delivery-box{
+  background:var(--ink2);border:1px solid var(--border);border-radius:16px;
+  padding:20px;margin-bottom:28px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.del-row{display:flex;align-items:flex-start;gap:14px;}
+.del-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.del-info{}
+.del-title{font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:2px;}
+.del-sub{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.del-sub strong{color:var(--jade);}
+.del-divider{height:1px;background:var(--border);}
+
+/* ── TABS ── */
+.tabs-section{max-width:1400px;margin:0 auto;padding:0 80px 80px;}
+
+.tabs-nav{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:40px;overflow-x:auto;}
+.tab-btn{
+  height:48px;padding:0 28px;
+  background:transparent;border:none;border-bottom:2.5px solid transparent;
+  color:var(--muted);font-size:.9rem;font-weight:600;
+  transition:color .2s,border-color .2s;white-space:nowrap;margin-bottom:-1px;
+}
+.tab-btn:hover{color:var(--white);}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* specs table */
+.specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.spec-row{display:flex;border-bottom:1px solid var(--border);}
+.spec-row:last-child{border-bottom:none;}
+.spec-row:nth-child(odd){background:var(--ink2);}
+.spec-key{width:42%;padding:14px 20px;font-size:.85rem;color:var(--muted);font-weight:600;border-right:1px solid var(--border);}
+.spec-val{padding:14px 20px;font-size:.85rem;color:var(--body);}
+
+/* reviews */
+.reviews-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:36px;}
+.rating-summary{display:flex;align-items:center;gap:32px;}
+.big-score{font-family:'Clash Display',sans-serif;font-size:4rem;font-weight:700;color:var(--white);line-height:1;}
+.big-stars{color:var(--gold);font-size:1.3rem;letter-spacing:.05em;margin-bottom:4px;}
+.big-sub{font-size:.82rem;color:var(--muted);}
+
+.rating-bars{flex:1;max-width:280px;display:flex;flex-direction:column;gap:7px;}
+.rbar-row{display:flex;align-items:center;gap:10px;font-size:.78rem;}
+.rbar-label{color:var(--muted);width:30px;text-align:right;flex-shrink:0;}
+.rbar-track{flex:1;height:5px;background:var(--ink3);border-radius:5px;overflow:hidden;}
+.rbar-fill{height:100%;background:var(--gold);border-radius:5px;}
+.rbar-count{color:var(--muted);width:20px;flex-shrink:0;}
+
+.review-sort{display:flex;gap:8px;align-items:center;}
+.rsort-btn{height:34px;padding:0 16px;border-radius:100px;font-size:.8rem;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--soft);transition:background .15s,border-color .15s,color .15s;}
+.rsort-btn:hover{border-color:var(--gold);color:var(--white);}
+.rsort-btn.active{background:var(--gold);border-color:var(--gold);color:var(--ink);}
+
+.reviews-list{display:flex;flex-direction:column;gap:20px;}
+.review-card{background:var(--ink2);border:1px solid var(--border);border-radius:16px;padding:24px;transition:border-color .2s;}
+.review-card:hover{border-color:rgba(240,165,0,.25);}
+.rv-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px;}
+.rv-user{display:flex;align-items:center;gap:12px;}
+.rv-avatar{width:40px;height:40px;border-radius:50%;background:var(--ink3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--gold);}
+.rv-name{font-size:.9rem;font-weight:600;color:var(--white);}
+.rv-date{font-size:.75rem;color:var(--muted);}
+.rv-stars{color:var(--gold);font-size:.85rem;}
+.rv-verified{display:flex;align-items:center;gap:4px;font-size:.72rem;color:var(--jade);font-weight:600;margin-top:3px;}
+.rv-title{font-family:'Clash Display',sans-serif;font-size:.92rem;font-weight:600;color:var(--white);margin-bottom:8px;}
+.rv-body{font-size:.85rem;color:var(--soft);line-height:1.7;}
+.rv-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.rv-tag{padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:600;background:var(--ink3);border:1px solid var(--border);color:var(--muted);}
+.rv-helpful{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--muted);}
+.rv-helpful button{background:none;border:1px solid var(--border);border-radius:100px;padding:3px 12px;color:var(--muted);font-size:.75rem;transition:border-color .15s,color .15s;}
+.rv-helpful button:hover{border-color:var(--jade);color:var(--jade);}
+
+/* description */
+.desc-body{font-size:.95rem;line-height:1.85;color:var(--soft);max-width:720px;}
+.desc-body h3{font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:600;color:var(--white);margin:24px 0 10px;}
+.desc-body ul{margin-left:20px;margin-bottom:16px;}
+.desc-body li{margin-bottom:8px;}
+.desc-body strong{color:var(--body);}
+
+/* what's in box */
+.box-items{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;}
+.box-item{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--ink2);border:1px solid var(--border);border-radius:12px;padding:16px 20px;font-size:.8rem;color:var(--muted);min-width:90px;}
+.box-item span{font-size:1.8rem;}
+
+/* ── RELATED PRODUCTS ── */
+.related-section{max-width:1400px;margin:0 auto;padding:0 80px 100px;}
+.section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;}
+.section-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.section-title{font-family:'Clash Display',sans-serif;font-size:1.8rem;font-weight:700;color:var(--white);letter-spacing:-.02em;}
+.view-all{font-size:.85rem;font-weight:600;color:var(--gold);border-bottom:1px solid rgba(240,165,0,.3);padding-bottom:2px;transition:border-color .2s;}
+.view-all:hover{border-color:var(--gold);}
+
+.related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.rc{background:var(--ink2);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .25s,transform .25s;cursor:none;}
+.rc:hover{border-color:rgba(240,165,0,.4);transform:translateY(-4px);}
+.rc:hover .rc-actions{opacity:1;transform:translateY(0);}
+.rc-img{aspect-ratio:1;background:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden;}
+.rc-actions{position:absolute;bottom:10px;left:10px;right:10px;display:flex;gap:8px;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s;}
+.rca{flex:1;height:36px;border-radius:8px;border:none;background:var(--gold);color:var(--ink);font-size:.78rem;font-weight:700;transition:background .15s;}
+.rca:hover{background:var(--gold2);}
+.rc-body{padding:16px;}
+.rc-cat{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.rc-name{font-family:'Clash Display',sans-serif;font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:10px;line-height:1.3;}
+.rc-price{font-family:'Clash Display',sans-serif;font-size:1.05rem;font-weight:700;color:var(--gold);}
+.rc-old{font-size:.75rem;color:var(--muted);text-decoration:line-through;margin-left:5px;}
+
+/* ── STICKY MOBILE BAR ── */
+.sticky-bar{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:var(--ink2);border-top:1px solid var(--border);
+  padding:14px 24px;
+  display:none;align-items:center;gap:12px;
+}
+.sticky-price{font-family:'Clash Display',sans-serif;font-size:1.3rem;font-weight:700;color:var(--gold);}
+.sticky-add{flex:1;height:48px;background:var(--gold);border:none;border-radius:10px;color:var(--ink);font-size:.9rem;font-weight:800;transition:background .2s;}
+.sticky-add:hover{background:var(--gold2);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){.product-main{grid-template-columns:1fr;gap:40px;padding:40px 40px 60px;}.gallery{position:static;}.tabs-section,.related-section{padding:0 40px 60px;}.breadcrumb-bar{padding:88px 40px 0;}.related-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){nav{padding:0 24px;}.nav-links{display:none;}.product-main{padding:32px 24px 60px;}.tabs-section,.related-section{padding:0 24px 60px;}.breadcrumb-bar{padding:88px 24px 0;}.specs-grid{grid-template-columns:1fr;}.related-grid{grid-template-columns:repeat(2,1fr);}.purchase-row{flex-wrap:wrap;}.cta-cart{flex:1 1 calc(100% - 52px - 12px);}.sticky-bar{display:flex;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}.main-emoji{font-size:6rem;}}
+</style>
+</head>
+<body>
+  <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <defs><linearGradient id="nlg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#F0A500"/><stop offset="100%" stop-color="#E84B1A"/></linearGradient></defs>
+      <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="url(#nlg)" stroke-width="1.5"/>
+      <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="serif" font-weight="700" font-size="13" fill="#F0A500">A</text>
+    </svg>
+    <span class="nav-brand">ADEY</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="adey-homepage.html">Home</a></li>
+    <li><a href="adey-shop.html">Shop</a></li>
+    <li><a href="#">In Transit</a></li>
+    <li><a href="#">Pre-Order</a></li>
+    <li><a href="#">Track Order</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" data-auth-hide onclick="location.href='adey-auth.html'">Sign In</button>
+    <a href="adey-dashboard.html" class="btn-ghost" data-auth-show style="display:none">Hi, <span data-user-name>there</span> 👤</a>
+    <button class="btn-primary">Get Started →</button>
+    <button class="cart-btn">🛒<span class="cart-badge" data-cart-count id="cartCount">0</span></button>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+  <div class="breadcrumb">
+    <a href="adey-homepage.html">Home</a><span class="breadcrumb-sep">›</span>
+    <a href="adey-shop.html">Shop</a><span class="breadcrumb-sep">›</span>
+    <a href="#">Audio & Earphones</a><span class="breadcrumb-sep">›</span>
+    <span>Pro Wireless Earbuds ANC</span>
+  </div>
+</div>
+
+<!-- MAIN PRODUCT -->
+<div class="product-main">
+
+  <!-- ── GALLERY ── -->
+  <div class="gallery">
+    <div class="main-img-wrap" id="mainImgWrap">
+      <div class="img-badges">
+        <span class="img-badge ibadge-hot">🔥 Best Seller</span>
+        <span class="img-badge ibadge-sale">37% OFF</span>
+      </div>
+      <div class="discount-circle">37%<br/>OFF</div>
+      <div class="main-emoji" id="mainEmoji">🎧</div>
+      <div class="zoom-hint">🔍 Click to zoom</div>
+    </div>
+
+    <div class="thumbs">
+      <div class="thumb active" onclick="setThumb(this,'🎧')"><span class="thumb-emoji">🎧</span></div>
+      <div class="thumb" onclick="setThumb(this,'📦')"><span class="thumb-emoji">📦</span></div>
+      <div class="thumb" onclick="setThumb(this,'🔌')"><span class="thumb-emoji">🔌</span></div>
+      <div class="thumb" onclick="setThumb(this,'📱')"><span class="thumb-emoji">📱</span></div>
+      <div class="thumb" onclick="setThumb(this,'🎵')"><span class="thumb-emoji">🎵</span></div>
+    </div>
+
+    <div class="share-row">
+      <span class="share-label">Share:</span>
+      <button class="share-btn">𝕏</button>
+      <button class="share-btn">📘</button>
+      <button class="share-btn">📸</button>
+      <button class="share-btn" title="Copy link">🔗</button>
+    </div>
+  </div>
+
+  <!-- ── PRODUCT INFO ── -->
+  <div class="product-info">
+
+    <div class="pi-eyebrow">
+      <span class="pi-cat">Audio &amp; Earphones</span>
+      <span class="pi-sep">·</span>
+      <span class="pi-sku">SKU: ADE-AUD-002</span>
+    </div>
+
+    <h1 class="pi-title">Pro Wireless Earbuds<br/>ANC Noise Cancelling</h1>
+
+    <div class="pi-rating">
+      <span class="stars-lg">★★★★★</span>
+      <span class="rating-score">4.9</span>
+      <span class="rating-count">284 reviews</span>
+      <span class="rating-divider">|</span>
+      <span class="verified-badge">✅ 2,100+ sold</span>
+    </div>
+
+    <!-- Price -->
+    <div class="price-block">
+      <div class="price-row">
+        <span class="price-main">₦28,500</span>
+        <span class="price-old">₦45,000</span>
+        <span class="price-save">Save ₦16,500</span>
+      </div>
+      <div class="price-note">
+        🏷️ Price includes import duties &amp; clearance. <strong>No hidden fees at delivery.</strong>
+      </div>
+      <div class="stock-bar">
+        <div class="stock-visual"><div class="stock-fill"></div></div>
+        <span class="stock-text low" id="stockText">⚠ Only 23 left in stock — order soon</span>
+      </div>
+    </div>
+
+    <!-- Colour picker -->
+    <div class="option-group">
+      <div class="option-label">
+        Colour: <span class="option-selected" id="colorLabel">Midnight Black</span>
+      </div>
+      <div class="color-opts">
+        <div class="color-opt active" style="background:#1a1a1a;" onclick="setColor(this,'Midnight Black')" title="Midnight Black"></div>
+        <div class="color-opt" style="background:#e8e8e8;" onclick="setColor(this,'Pearl White')" title="Pearl White"></div>
+        <div class="color-opt" style="background:#2d6fcf;" onclick="setColor(this,'Ocean Blue')" title="Ocean Blue"></div>
+        <div class="color-opt" style="background:#c0392b;" onclick="setColor(this,'Ruby Red')" title="Ruby Red"></div>
+        <div class="color-opt" style="background:#27ae60;" onclick="setColor(this,'Forest Green')" title="Forest Green"></div>
+      </div>
+    </div>
+
+    <!-- Connectivity variant -->
+    <div class="option-group">
+      <div class="option-label">Connectivity:</div>
+      <div class="variant-opts">
+        <button class="variant-opt active" onclick="setVariant(this)">Bluetooth 5.3</button>
+        <button class="variant-opt" onclick="setVariant(this)">Bluetooth 5.0</button>
+        <button class="variant-opt out" onclick="setVariant(this)">Wired USB-C</button>
+      </div>
+    </div>
+
+    <!-- Qty + CTA -->
+    <div class="purchase-row">
+      <div class="qty-control">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <input class="qty-num" id="qtyInput" type="number" value="1" min="1" max="23" readonly/>
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+      <button class="cta-cart" id="addCartBtn" onclick="addToCart()">
+        🛒 Add to Cart
+      </button>
+      <button class="cta-wish" id="wishBtn" onclick="toggleWish()">♡</button>
+    </div>
+
+    <div class="cta-secondary-row">
+      <button class="cta-full" style="border-color:var(--gold);color:var(--gold);" onclick="buyNow()">
+        ⚡ Buy Now — Pay with Paystack
+      </button>
+    </div>
+    <div class="cta-secondary-row">
+      <button class="cta-full">📅 Pay 30% Deposit — Pre-Order</button>
+      <button class="cta-full">📋 Add to Wishlist</button>
+    </div>
+
+    <!-- Trust pills -->
+    <div class="trust-pills">
+      <div class="trust-pill"><span>🔒</span> Secured by Paystack</div>
+      <div class="trust-pill"><span>↩️</span> 7-day returns</div>
+      <div class="trust-pill"><span>✅</span> Quality verified</div>
+      <div class="trust-pill"><span>📲</span> SMS order updates</div>
+    </div>
+
+    <!-- Delivery info -->
+    <div class="delivery-box">
+      <div class="del-row">
+        <div class="del-icon">🚚</div>
+        <div class="del-info">
+          <div class="del-title">Lagos Delivery</div>
+          <div class="del-sub">Order before <strong>4 PM today</strong> → delivered <strong>tomorrow</strong>. Flat fee: <strong>₦1,500</strong>. Free above ₦30,000.</div>
+        </div>
+      </div>
+      <div class="del-divider"></div>
+      <div class="del-row">
+        <div class="del-icon">🏪</div>
+        <div class="del-info">
+          <div class="del-title">Pick Up — Free</div>
+          <div class="del-sub">Collect from our store on <strong>Admiralty Way, Lekki Phase 1</strong>. Mon–Sat, 9am–6pm.</div>
+        </div>
+      </div>
+      <div class="del-divider"></div>
+      <div class="del-row">
+        <div class="del-icon">↩️</div>
+        <div class="del-info">
+          <div class="del-title">Returns Policy</div>
+          <div class="del-sub"><strong>7 days</strong> to return unused items in original packaging. Full refund or exchange.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabs-section">
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="setTab(this,'desc')">Description</button>
+    <button class="tab-btn" onclick="setTab(this,'specs')">Specifications</button>
+    <button class="tab-btn" onclick="setTab(this,'reviews')">Reviews (284)</button>
+    <button class="tab-btn" onclick="setTab(this,'ship')">Shipping &amp; Returns</button>
+  </div>
+
+  <!-- Description -->
+  <div class="tab-panel active" id="tab-desc">
+    <div class="desc-body">
+      <p>The <strong>Pro Wireless Earbuds ANC</strong> deliver premium audio performance at a fraction of what you'd pay for equivalent branded products in Nigerian retail stores. We source directly from a certified Guangzhou audio manufacturer and ship them here — no middlemen, no retail markup.</p>
+
+      <h3>Active Noise Cancellation</h3>
+      <p>Dual-mic hybrid ANC suppresses up to <strong>35dB of ambient noise</strong> — enough to block out Lagos traffic, generators, and busy offices. Transparency Mode lets you hear your surroundings without removing the buds.</p>
+
+      <h3>Sound Quality</h3>
+      <p>11mm dynamic drivers with a tuned bass response and detailed highs. Whether you're on calls, in meetings, or listening to Afrobeats on your commute — the audio is clear, immersive, and loud.</p>
+
+      <h3>Battery Life</h3>
+      <ul>
+        <li>8 hours playback per charge with ANC on</li>
+        <li>30 hours total with the charging case</li>
+        <li>Fast charge: 15 minutes = 2 hours playback</li>
+        <li>Charges via USB-C (cable included)</li>
+      </ul>
+
+      <h3>What's in the Box</h3>
+      <div class="box-items">
+        <div class="box-item"><span>🎧</span>Earbuds (x2)</div>
+        <div class="box-item"><span>📦</span>Charging case</div>
+        <div class="box-item"><span>🔌</span>USB-C cable</div>
+        <div class="box-item"><span>🪶</span>Ear tips (S/M/L)</div>
+        <div class="box-item"><span>📄</span>Manual</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Specs -->
+  <div class="tab-panel" id="tab-specs">
+    <div class="specs-grid">
+      <div><div class="spec-row"><div class="spec-key">Driver Size</div><div class="spec-val">11mm Dynamic</div></div>
+      <div class="spec-row"><div class="spec-key">Frequency Response</div><div class="spec-val">20Hz – 20kHz</div></div>
+      <div class="spec-row"><div class="spec-key">Impedance</div><div class="spec-val">32Ω</div></div>
+      <div class="spec-row"><div class="spec-key">ANC Reduction</div><div class="spec-val">Up to 35dB</div></div>
+      <div class="spec-row"><div class="spec-key">Microphones</div><div class="spec-val">6-mic array (3 per bud)</div></div>
+      <div class="spec-row"><div class="spec-key">Connectivity</div><div class="spec-val">Bluetooth 5.3</div></div></div>
+
+      <div><div class="spec-row"><div class="spec-key">Bluetooth Range</div><div class="spec-val">Up to 10m</div></div>
+      <div class="spec-row"><div class="spec-key">Playback (ANC on)</div><div class="spec-val">8 hours</div></div>
+      <div class="spec-row"><div class="spec-key">Total with Case</div><div class="spec-val">30 hours</div></div>
+      <div class="spec-row"><div class="spec-key">Charging</div><div class="spec-val">USB-C, 15min = 2hr</div></div>
+      <div class="spec-row"><div class="spec-key">Water Resistance</div><div class="spec-val">IPX5</div></div>
+      <div class="spec-row"><div class="spec-key">Weight (per bud)</div><div class="spec-val">5.4g</div></div></div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="tab-panel" id="tab-reviews">
+    <div class="reviews-header">
+      <div class="rating-summary">
+        <div>
+          <div class="big-score">4.9</div>
+          <div class="big-stars">★★★★★</div>
+          <div class="big-sub">284 verified reviews</div>
+        </div>
+        <div class="rating-bars">
+          <div class="rbar-row"><span class="rbar-label">5★</span><div class="rbar-track"><div class="rbar-fill" style="width:87%"></div></div><span class="rbar-count">247</span></div>
+          <div class="rbar-row"><span class="rbar-label">4★</span><div class="rbar-track"><div class="rbar-fill" style="width:9%"></div></div><span class="rbar-count">25</span></div>
+          <div class="rbar-row"><span class="rbar-label">3★</span><div class="rbar-track"><div class="rbar-fill" style="width:3%"></div></div><span class="rbar-count">8</span></div>
+          <div class="rbar-row"><span class="rbar-label">2★</span><div class="rbar-track"><div class="rbar-fill" style="width:1%"></div></div><span class="rbar-count">3</span></div>
+          <div class="rbar-row"><span class="rbar-label">1★</span><div class="rbar-track"><div class="rbar-fill" style="width:0%"></div></div><span class="rbar-count">1</span></div>
+        </div>
+      </div>
+      <div class="review-sort">
+        <button class="rsort-btn active" onclick="setRSort(this)">Most Recent</button>
+        <button class="rsort-btn" onclick="setRSort(this)">Most Helpful</button>
+        <button class="rsort-btn" onclick="setRSort(this)">Top Rated</button>
+      </div>
+    </div>
+
+    <div class="reviews-list">
+      <div class="review-card">
+        <div class="rv-header">
+          <div class="rv-user">
+            <div class="rv-avatar">AK</div>
+            <div>
+              <div class="rv-name">Adaeze K.</div>
+              <div class="rv-date">March 12, 2025 · Lagos</div>
+            </div>
+          </div>
+          <div><div class="rv-stars">★★★★★</div><div class="rv-verified">✅ Verified Purchase</div></div>
+        </div>
+        <div class="rv-title">Best earbuds I've bought in Lagos — ever.</div>
+        <div class="rv-body">I was skeptical paying this price for earbuds I'd never heard of, but ADEY's price was too good to ignore. The ANC is genuinely impressive — I use them on the bus every morning and barely hear anything outside. Sound quality is crisp and the bass is punchy without being muddy. Delivery was next day, packaging was solid. Will definitely be buying from here again.</div>
+        <div class="rv-tags"><span class="rv-tag">Great ANC</span><span class="rv-tag">Fast Delivery</span><span class="rv-tag">Worth the price</span></div>
+        <div class="rv-helpful">Helpful? <button onclick="this.textContent='👍 Yes (12)'">👍 Yes (11)</button><button>👎 No (1)</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="rv-header">
+          <div class="rv-user">
+            <div class="rv-avatar">BO</div>
+            <div>
+              <div class="rv-name">Bola O.</div>
+              <div class="rv-date">March 8, 2025 · Lagos</div>
+            </div>
+          </div>
+          <div><div class="rv-stars">★★★★★</div><div class="rv-verified">✅ Verified Purchase</div></div>
+        </div>
+        <div class="rv-title">Sound quality for the price is unbeatable</div>
+        <div class="rv-body">These compete with earbuds that cost 3x the price at Slot or Game. The connection is stable, hasn't dropped once in 3 weeks of use. Battery genuinely lasts all day. My only minor gripe is the touch controls take getting used to, but the manual explains them clearly.</div>
+        <div class="rv-tags"><span class="rv-tag">Great battery</span><span class="rv-tag">Stable connection</span></div>
+        <div class="rv-helpful">Helpful? <button>👍 Yes (8)</button><button>👎 No (0)</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="rv-header">
+          <div class="rv-user">
+            <div class="rv-avatar">CF</div>
+            <div>
+              <div class="rv-name">Chike F.</div>
+              <div class="rv-date">February 28, 2025 · Abuja</div>
+            </div>
+          </div>
+          <div><div class="rv-stars">★★★★☆</div><div class="rv-verified">✅ Verified Purchase</div></div>
+        </div>
+        <div class="rv-title">Very good — minor fit issue</div>
+        <div class="rv-body">Excellent sound and the ANC works well. I found the medium tips a slightly loose fit for me, but swapping to the small ones fixed it. ADEY's customer service was helpful when I reached out via WhatsApp. Overall would recommend, just try the different tip sizes.</div>
+        <div class="rv-tags"><span class="rv-tag">Good sound</span><span class="rv-tag">Helpful support</span></div>
+        <div class="rv-helpful">Helpful? <button>👍 Yes (5)</button><button>👎 No (1)</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shipping -->
+  <div class="tab-panel" id="tab-ship">
+    <div class="desc-body">
+      <h3>Lagos Delivery</h3>
+      <p>In-stock orders placed before <strong>4 PM</strong> on weekdays are dispatched same day and typically arrive <strong>next business day</strong>. We use trusted Lagos dispatch partners. You'll receive an SMS with tracking information once dispatched.</p>
+      <ul>
+        <li>Standard delivery: <strong>₦1,500</strong> (24–48 hrs)</li>
+        <li>Express delivery: <strong>₦3,000</strong> (same day, orders before 12 PM)</li>
+        <li>Free delivery on orders above <strong>₦30,000</strong></li>
+      </ul>
+
+      <h3>Outside Lagos</h3>
+      <p>We ship nationwide via GIG Logistics and Aramex. Prices and delivery times vary by state — calculated at checkout. Typical transit time is <strong>2–5 business days</strong>.</p>
+
+      <h3>Returns &amp; Refunds</h3>
+      <p>We accept returns within <strong>7 days of delivery</strong> for items in unused condition and original packaging. Contact us via WhatsApp or email to initiate a return. Refunds are processed within <strong>3–5 business days</strong> to your original payment method.</p>
+      <ul>
+        <li>Items must be unused and in original packaging</li>
+        <li>Receipt or order confirmation required</li>
+        <li>Faulty items replaced or refunded at no cost to you</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ── RELATED PRODUCTS ── -->
+<div class="related-section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">You May Also Like</div>
+      <div class="section-title">Related Products</div>
+    </div>
+    <a href="adey-shop.html" class="view-all">View All →</a>
+  </div>
+  <div class="related-grid">
+    <div class="rc"><div class="rc-img">📱<div class="rc-actions"><button class="rca" onclick="quickAdd(this)">Add to Cart</button></div></div><div class="rc-body"><div class="rc-cat">Phones</div><div class="rc-name">Xiaomi Redmi 13C 128GB</div><div><span class="rc-price">₦92,000</span><span class="rc-old">₦130,000</span></div></div></div>
+    <div class="rc"><div class="rc-img">🔊<div class="rc-actions"><button class="rca" onclick="quickAdd(this)">Add to Cart</button></div></div><div class="rc-body"><div class="rc-cat">Audio</div><div class="rc-name">Portable BT Speaker 360° Bass</div><div><span class="rc-price">₦19,500</span><span class="rc-old">₦31,000</span></div></div></div>
+    <div class="rc"><div class="rc-img">⌚<div class="rc-actions"><button class="rca" onclick="quickAdd(this)">Add to Cart</button></div></div><div class="rc-body"><div class="rc-cat">Wearables</div><div class="rc-name">Smart Watch Ultra Health Monitor</div><div><span class="rc-price">₦38,000</span><span class="rc-old">₦60,000</span></div></div></div>
+    <div class="rc"><div class="rc-img">🔋<div class="rc-actions"><button class="rca" onclick="quickAdd(this)">Add to Cart</button></div></div><div class="rc-body"><div class="rc-cat">Accessories</div><div class="rc-name">20,000mAh Power Bank 65W</div><div><span class="rc-price">₦22,000</span><span class="rc-old">₦35,000</span></div></div></div>
+  </div>
+</div>
+
+<!-- Mobile sticky bar -->
+<div class="sticky-bar" id="stickyBar">
+  <span class="sticky-price">₦28,500</span>
+  <button class="sticky-add" onclick="addToCart()">🛒 Add to Cart</button>
+</div>
+
+<script>
+/* cursor */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx-5+'px';cur.style.top=my-5+'px';});
+(function a(){rx+=(mx-rx-18)*.14;ry+=(my-ry-18)*.14;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('a,button,.thumb,.color-opt,.rc').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='scale(2.5)';ring.style.transform='scale(1.4)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';ring.style.transform='scale(1)';});
+});
+
+/* thumbnail switch */
+function setThumb(el,emoji){
+  document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const main=document.getElementById('mainEmoji');
+  main.style.transform='scale(0) rotate(-10deg)';main.style.opacity='0';
+  main.style.transition='transform .2s,opacity .2s';
+  setTimeout(()=>{
+    main.textContent=emoji;
+    main.style.transform='scale(1) rotate(0)';main.style.opacity='1';
+  },200);
+}
+
+/* qty */
+let qty=1;
+function changeQty(d){
+  qty=Math.max(1,Math.min(23,qty+d));
+  document.getElementById('qtyInput').value=qty;
+}
+
+/* cart */
+let cartN=0;
+function addToCart(){
+  cartN+=qty;
+  document.getElementById('cartCount').textContent=cartN;
+  const btn=document.getElementById('addCartBtn');
+  btn.textContent='✓ Added to Cart!';btn.classList.add('added');
+  setTimeout(()=>{btn.innerHTML='🛒 Add to Cart';btn.classList.remove('added');},2000);
+}
+function quickAdd(btn){
+  cartN++;document.getElementById('cartCount').textContent=cartN;
+  const o=btn.textContent;btn.textContent='✓ Added!';btn.style.background='#00BFA5';btn.style.color='#fff';
+  setTimeout(()=>{btn.textContent=o;btn.style.background='';btn.style.color='';},1600);
+}
+function buyNow(){addToCart();setTimeout(()=>alert('Redirecting to Paystack checkout…'),300);}
+
+/* wishlist */
+let wished=false;
+function toggleWish(){
+  wished=!wished;
+  const btn=document.getElementById('wishBtn');
+  btn.textContent=wished?'♥':'♡';
+  btn.classList.toggle('active',wished);
+}
+
+/* colour picker */
+function setColor(el,name){
+  document.querySelectorAll('.color-opt').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('colorLabel').textContent=name;
+}
+
+/* variants */
+function setVariant(btn){
+  document.querySelectorAll('.variant-opt:not(.out)').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* tabs */
+function setTab(btn,id){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+/* review sort */
+function setRSort(btn){
+  document.querySelectorAll('.rsort-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* mobile sticky bar — show after scrolling past buy button */
+const purchaseRow=document.querySelector('.purchase-row');
+const stickyBar=document.getElementById('stickyBar');
+if(window.innerWidth<=700){
+  window.addEventListener('scroll',()=>{
+    const rect=purchaseRow.getBoundingClientRect();
+    stickyBar.style.display=rect.bottom<0?'flex':'none';
+  });
+}
+
+/* scroll reveal related cards */
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}
+}),{threshold:.1});
+document.querySelectorAll('.rc').forEach((c,i)=>{
+  c.style.opacity='0';c.style.transform='translateY(16px)';
+  c.style.transition=`opacity .4s ${i*.08}s ease,transform .4s ${i*.08}s ease,border-color .25s`;
+  obs.observe(c);
+});
+</script>
+  <script src="adey-api.js"></script>
+  <script src="adey-product-integration.js"></script>
+</body>
+</html>
