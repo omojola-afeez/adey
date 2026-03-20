@@ -13,11 +13,11 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{background:var(--ink);color:var(--body);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden;cursor:none;}
+body{background:var(--ink);color:var(--body);font-family:'Cabinet Grotesk',sans-serif;overflow-x:hidden;cursor: auto;}
 .cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transition:transform .15s;mix-blend-mode:difference;}
 .cursor-ring{width:36px;height:36px;border:1.5px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;}
 a{color:inherit;text-decoration:none;}
-button,input,select,textarea{cursor:none;font-family:inherit;}
+button,input,select,textarea{cursor: pointer;font-family:inherit;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--ink2);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px;}
 
 /* ── NAV ── */
@@ -242,10 +242,59 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @media(max-width:1100px){.layout{grid-template-columns:1fr;}.summary-panel{position:static;}.step-bar,.page-top{padding-left:40px;padding-right:40px;}.layout{padding:0 40px 80px;}}
 @media(max-width:700px){nav{padding:0 24px;}.nav-links{display:none;}.step-bar,.page-top{padding-left:24px;padding-right:24px;}.layout{padding:0 24px 80px;}.step-label{display:none;}.cart-item{grid-template-columns:60px 1fr auto;gap:12px;padding:16px 20px;}.ci-img{width:60px;height:60px;font-size:1.6rem;}.form-row.cols2,.form-row.cols3{grid-template-columns:1fr;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}}
 </style>
-  <style>
-    /* Disable custom cursor for production */
+  <style id="adey-cursor-fix">
+    /* ── ADEY Cursor Fix ── */
     body { cursor: auto !important; }
-    .cursor, .cursor-ring { display: none !important; }
+    .cursor, .cursor-ring { display: none !important; pointer-events: none !important; }
+    
+    /* All clickable elements get pointer */
+    a, button, [onclick],
+    .nav-item, .nav-links a,
+    .product-card, .cat-card, .cat-opt,
+    .check-item, .rating-opt, .del-opt,
+    .pay-tab, .thumb, .color-opt,
+    .variant-opt, .pill, .of-btn,
+    .pca-btn, .pca-wish, .cta-cart,
+    .wl-btn, .wl-remove, .rc, .rc a,
+    .stat-card, .ro-item, .order-card,
+    .trust-card, .how-step, .feature-card,
+    .sb-item, .tb-icon-btn, .tb-user,
+    .sort-select, select, input[type="radio"],
+    input[type="checkbox"], input[type="range"],
+    .step-head, .tab-btn, .rsort-btn,
+    .oc-btn, .addr-btn, .addr-item,
+    .nf-item, .share-btn, .social-link,
+    .toggle, .pc-edit, .logout-btn,
+    .sb-logout, .view-all, .cta-main,
+    .cta-secondary, .cta-full, .cta-secondary-row button,
+    .load-more, .pg-btn, .coupon-btn,
+    .copy-btn, .mark-read, .clear-btn,
+    .fg-toggle, .close-btn, .modal-close,
+    .btn-primary, .btn-ghost, .btn-outline,
+    .btn-danger, .btn-sm-primary, .btn-sm-outline,
+    .submit-btn, .social-btn, .pay-alt-btn,
+    .ra-btn, .status-select, .filter-fab,
+    .ship-cta, .cta-cart, .pca-btn,
+    .sb-item, .nav-item, .pn-item,
+    .del-opt, .tp-item, .bp-node,
+    input[type="range"]::-webkit-slider-thumb { 
+      cursor: pointer !important; 
+    }
+
+    /* Text inputs stay text cursor */
+    input[type="text"],
+    input[type="email"], 
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="search"],
+    input[type="date"],
+    textarea {
+      cursor: text !important;
+    }
+
+    /* Range slider thumb */
+    input[type="range"] { cursor: pointer !important; }
   </style>
 </head>
 <body>
@@ -909,5 +958,17 @@ recalc();
 </script>
   <script src="adey-api.js"></script>
   <script src="adey-checkout-integration.js"></script>
+  <script id="adey-cursor-fix-js">
+    // Remove custom cursor elements and JS behaviour on load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Hide cursor overlay elements
+      ['cursor','cursorRing'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) { el.style.display = 'none'; el.style.visibility = 'hidden'; }
+      });
+      // Restore body cursor
+      document.body.style.cursor = 'auto';
+    });
+  </script>
 </body>
 </html>
