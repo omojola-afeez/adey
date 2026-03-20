@@ -234,6 +234,11 @@ tr:hover .row-actions{opacity:1;}
 @media(max-width:1100px){.stat-row{grid-template-columns:repeat(2,1fr);}.grid-2,.grid-3{grid-template-columns:1fr;}.analytics-row{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:768px){.sidebar{transform:translateX(-100%);}.main{margin-left:0;}.topbar{left:0;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}.stat-row{grid-template-columns:1fr 1fr;}.inv-grid{grid-template-columns:1fr 1fr;}}
 </style>
+  <style>
+    /* Disable custom cursor for production */
+    body { cursor: auto !important; }
+    .cursor, .cursor-ring { display: none !important; }
+  </style>
 </head>
 <body>
   <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>

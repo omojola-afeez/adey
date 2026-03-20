@@ -351,6 +351,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @media(max-width:1100px){.product-main{grid-template-columns:1fr;gap:40px;padding:40px 40px 60px;}.gallery{position:static;}.tabs-section,.related-section{padding:0 40px 60px;}.breadcrumb-bar{padding:88px 40px 0;}.related-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:700px){nav{padding:0 24px;}.nav-links{display:none;}.product-main{padding:32px 24px 60px;}.tabs-section,.related-section{padding:0 24px 60px;}.breadcrumb-bar{padding:88px 24px 0;}.specs-grid{grid-template-columns:1fr;}.related-grid{grid-template-columns:repeat(2,1fr);}.purchase-row{flex-wrap:wrap;}.cta-cart{flex:1 1 calc(100% - 52px - 12px);}.sticky-bar{display:flex;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}.main-emoji{font-size:6rem;}}
 </style>
+  <style>
+    /* Disable custom cursor for production */
+    body { cursor: auto !important; }
+    .cursor, .cursor-ring { display: none !important; }
+  </style>
 </head>
 <body>
   <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>

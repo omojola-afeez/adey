@@ -1196,6 +1196,11 @@ footer {
   .cursor, .cursor-ring { display: none; }
 }
 </style>
+  <style>
+    /* Disable custom cursor for production */
+    body { cursor: auto !important; }
+    .cursor, .cursor-ring { display: none !important; }
+  </style>
 </head>
 <body>
   <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>

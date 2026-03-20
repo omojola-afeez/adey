@@ -302,6 +302,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @media(max-width:1100px){.dash-wrap{grid-template-columns:1fr;}.dash-sidebar{position:static;height:auto;display:flex;flex-direction:row;flex-wrap:wrap;gap:0;padding:16px 0;border-right:none;border-bottom:1px solid var(--border);}.user-card{padding:0 20px 0;border-bottom:none;display:flex;align-items:center;gap:14px;margin-bottom:0;}.nav-section-label{display:none;}.nav-item{padding:10px 18px;font-size:.82rem;}.dash-main{padding:28px 24px;}.stats-row{grid-template-columns:repeat(2,1fr);}.wishlist-grid{grid-template-columns:repeat(2,1fr);}.profile-grid{grid-template-columns:1fr;}}
 @media(max-width:680px){nav{padding:0 20px;}.nav-links{display:none;}.stats-row{grid-template-columns:1fr 1fr;}.wishlist-grid{grid-template-columns:1fr 1fr;}.track-steps{gap:0;}.ts-label{font-size:.65rem;max-width:54px;}.profile-grid{grid-template-columns:1fr;}.dash-main{padding:20px 16px;}body{cursor:auto;}.cursor,.cursor-ring{display:none;}}
 </style>
+  <style>
+    /* Disable custom cursor for production */
+    body { cursor: auto !important; }
+    .cursor, .cursor-ring { display: none !important; }
+  </style>
 </head>
 <body>
   <script>window.ADEY_BASE_URL = 'https://adey-backend.onrender.com/api';</script>
